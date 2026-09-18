@@ -31,6 +31,7 @@ Lectures here mix English, Urdu and Pashto, often in noisy rooms, and I read Eng
 ### Desktop
 - A web app, free on GitHub Pages. Sign in with Google to browse, play, edit, study and chat from any computer.
 - Everything syncs both ways through my own Google Drive
+- Export transcripts and notes (Markdown, text or PDF) to share with classmates, or share them straight from Google Drive
 
 ## How it works
 
@@ -87,7 +88,7 @@ This repo and app ship with **no API keys**. Everyone who uses the code adds the
 ## Privacy and recording consent
 
 - **Ask before recording.** Check the university's policy and ask each lecturer.
-- Recordings are for personal study only.
+- Recordings are for personal study only. Share transcripts with classmates only if the lecturer is fine with it.
 - Audio is sent to Groq and text and photos to Google Gemini for processing. On free tiers, providers may use this content to improve their services.
 - API keys live only on my devices. Never commit them. `.env` files are git-ignored.
 
