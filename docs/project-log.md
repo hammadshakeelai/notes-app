@@ -59,3 +59,9 @@ A dated record of what was done and why. Decisions are recorded in full in [ADRs
 - License: not chosen yet (all rights reserved by default)
 - Spikes before Milestone 4 (processing): S1 and S2 done; S3–S5 open in the [roadmap](roadmap.md)
 - A new Google Cloud project dedicated to the Notes App (being done by the student)
+
+## 2026-09-19
+
+| Time | What happened | Outcome |
+| --- | --- | --- |
+| 00:03 | Asked to write everything into the repo | Test scripts moved from `private/` to `tools/spikes/` (data stays private); `verify_plan.py` added. The M1 plan was re-verified from its committed text: 19 files, 45 tests pass |

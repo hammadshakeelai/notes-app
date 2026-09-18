@@ -103,6 +103,7 @@ Details, exit criteria and requirement traceability: [docs/roadmap.md](docs/road
 | [Engineering conventions](docs/engineering.md) | Branches, commits, Definition of Done, tests, privacy checks |
 | [Phase 0 findings](docs/phase0-findings.md) | Transcription test results on real lectures |
 | [Project log](docs/project-log.md) | Dated record of what happened and why |
+| [Spike tools](tools/spikes/README.md) | The scripts behind the tests, and `verify_plan.py` to re-check a plan's code |
 
 ## Privacy and recording consent
 

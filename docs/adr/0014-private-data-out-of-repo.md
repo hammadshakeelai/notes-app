@@ -9,7 +9,7 @@ The repo is public and tied to the student's GitHub identity. The timetable with
 
 ## Decision
 
-`private/` is git-ignored and holds: the full timetable (teachers, rooms), recordings, transcripts and throwaway test scripts. `.env` is git-ignored. Public docs contain no lecture content and no teacher names. Before every push, history is scanned for key patterns and personal names.
+`private/` is git-ignored and holds: the full timetable (teachers, rooms), recordings, transcripts and test results. The test scripts themselves contain no personal data and live in `tools/spikes/`. `.env` is git-ignored. Public docs contain no lecture content and no teacher names. Before every push, history is scanned for key patterns and personal names.
 
 ## Consequences
 

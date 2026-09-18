@@ -38,3 +38,6 @@ private/
 
 # Local-only checks against private data (see M1 plan, Task 8)
 client/scripts/local/
+
+# Python caches
+__pycache__/

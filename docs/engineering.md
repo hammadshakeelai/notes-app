@@ -18,7 +18,8 @@ notes-app/
 │  ├─ roadmap.md          milestones, exit criteria, requirement traceability
 │  ├─ project-log.md      dated log of what happened
 │  └─ phase0-findings.md  spike results
-├─ private/               git-ignored: timetable with names, recordings, transcripts, spike scripts
+├─ tools/spikes/          throwaway test scripts (no data); they read and write private/phase0/
+├─ private/               git-ignored: timetable with names, recordings, transcripts, spike results
 └─ .env.example           template for your own API keys (.env is git-ignored)
 ```
 
@@ -51,7 +52,8 @@ notes-app/
 | Unit | Pure domain logic: timetable, numbering, naming, caution-loop checks, sync merge rules, FSRS wrapper | `client/src/**/__tests__` (Jest) | Every commit, CI |
 | Integration | Processing queue and sync engine against fake providers and a fake Drive | `client/src/**/__tests__` | Every commit, CI |
 | Device | Recorder behaviour on the S23 Ultra: screen off, swipe-away, call, reboot, battery drain | Checklist in the Milestone 2 plan | Before each release tag |
-| Spike | Model quality and free limits on real lectures | `private/` scripts, results in `docs/` | Before the milestone that depends on it |
+| Spike | Model quality and free limits on real lectures | Scripts in `tools/spikes/`, data in `private/`, results in `docs/` | Before the milestone that depends on it |
+| Plan check | A plan's embedded code and tests run before execution | `py -3 tools/spikes/verify_plan.py <plan>` | When a plan is written or changed |
 
 Test data built from real lectures stays in `private/`. Committed fixtures are synthetic or anonymised.
 
