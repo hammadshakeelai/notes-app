@@ -1,7 +1,7 @@
 # Notes App: Requirements and Design
 
 - **Date:** 2026-09-18
-- **Status:** Draft, awaiting review
+- **Status:** Approved 2026-09-18
 - **Owner:** @hammadshakeelai (sole user)
 
 ## 1. Summary
@@ -55,6 +55,7 @@ The student's consumer subscriptions (Google AI Pro, Claude Pro, ChatGPT Plus) d
 - **R-REC-9** A Photo button opens the camera. Each photo is saved and pinned to the current timestamp.
 - **R-REC-10** Bookmarks can be added from the app or the notification without unlocking the phone. Each bookmark is a timestamp with an optional label.
 - **R-REC-11** Audio format: mono, speech-quality AAC (about 14 MB per hour). The exact sample rate, bitrate and microphone source are chosen in Phase 0/1 by comparing transcription quality.
+- **R-REC-13** A live sound-level meter on the recording screen and in the notification warns when the lecturer is too quiet ("move closer or face the phone towards the teacher"). Better audio is the cheapest way to a correct transcript.
 - **R-REC-12** Audio from another recorder can be imported (phone file picker, or upload in the web app). You pick the subject and date, and it is numbered and processed like any other recording.
 
 ### 4.2 Timetable, naming and numbering
@@ -62,6 +63,7 @@ The student's consumer subscriptions (Google AI Pro, Claude Pro, ChatGPT Plus) d
 - **R-TT-2** Subjects group a **Lecture** stream (theory) and an optional **Lab** stream. Each stream has its own numbering.
 - **R-TT-3** Class detection when Record is tapped: (1) the slot whose time contains *now*; else (2) a slot starting within the next 15 minutes; else (3) a slot that ended within the last 10 minutes; else (4) ask for the subject and stream, or **Other**.
 - **R-TT-4** Recordings outside the timetable (a workshop, seminar or talk) are filed as **Other** with a title you type, e.g. `Fri 11 Sep 2026 – Cyber Workshop`. They have no lecture number, are processed the same way, and are not added to the Class share folder unless you switch it on for them.
+- **R-TT-5** Teachers can change mid-semester (this happened for the Machine Learning lab). A change takes effect from a date; earlier lectures keep the teacher they had, both in their names and in the context sent to the AI.
 - **R-NAME-1** Display name: `Mon 21 Sep 2026 – Fundamentals of Accounting – Lecture 5` or `… – Machine Learning – Lab 4`.
 - **R-NAME-2** File names use an ISO date prefix so they sort: `2026-09-21 Fundamentals of Accounting – Lecture 5`.
 - **R-NUM-1** Numbers follow the timetable: *number = scheduled slots of that stream from 2026-09-07 up to and including this one, minus slots marked cancelled or holiday, plus extra (make-up) sessions recorded before it.* Missed classes still use up a number.
@@ -76,7 +78,12 @@ The student's consumer subscriptions (Google AI Pro, Claude Pro, ChatGPT Plus) d
   - one segment per speaker turn, keeping short replies ("Jee jee", "Achha")
   - speakers labelled **Teacher** / **Student**, or by name when known
   Fallbacks, in order: the same model on 30-minute pieces, then Gemini Flash-Lite, then Groq Whisper.
-- **R-PROC-8 Context.** Every drafting and checking request includes: subject, stream, teacher's name, date, and a per-subject **glossary**: names and technical terms taken from earlier lectures' notes, plus any you add. In testing, context took names the model got right from 0 of 3 to 3 of 3.
+- **R-PROC-8 Context.** Every drafting and checking request includes:
+  - subject, stream, teacher's name and date
+  - a per-subject **glossary**: names and technical terms from earlier lectures' notes, terms you add, and your past corrections (R-QA-11)
+  - terms read from **this lecture's board and slide photos**
+  - optionally, the course outline or slides (PDF) you add to a subject
+  In testing, context took names the model got right from 0 of 3 to 3 of 3, and fixed technical terms (".bashrc", "ls -a").
 - **R-PROC-3** Nothing is marked done until it has passed the caution loop (4.3.1).
 - **R-PROC-4** From the English transcript, photos and bookmarks, the AI produces: a summary, key concepts, and study notes as Markdown (`.md`).
 - **R-PROC-5** Flashcards and practice questions are then generated (see 4.5).
@@ -96,13 +103,16 @@ Every transcript, and everything generated from it, is checked and repaired befo
   - a single out-of-place timestamp (seen once in a 52-minute test) is repaired by placing it between its neighbours
   - no empty segments
 - **R-QA-2** A draft that fails the automatic checks is redrafted: once more with the same model, then with a stronger one.
-- **R-QA-3 Independent check.** A second pass listens to the audio again, with the same context, and lists what is missing, wrong, invented or untranslated, with corrections. Phase 0 showed that Flash-Lite cannot be the checker (it passed transcripts known to be bad) and that newer Flash versions are often overloaded. Phase 2 decides between two checkers for Flash drafts: (a) Gemini Flash re-listening to the whole lecture, or (b) an independent Flash-Lite draft, with Flash re-listening only where the two disagree.
+- **R-QA-3 Find the doubtful parts.** A second, independent draft is made by a different model (Gemini Flash-Lite). The two drafts are lined up by their text and compared. Where they disagree, at least one is probably wrong. In testing, the biggest disagreement in a clip was exactly the word a person had spotted as wrong ("paths" heard as *paanch*).
+- **R-QA-3b Re-listen to the doubtful parts.** Each disagreement, and anything failing R-QA-1, is cut from the audio as a short clip (about 20–60 seconds, with a few seconds either side) and transcribed again with full context. Short clips are heard much more accurately than long audio: in testing even Flash-Lite fixed "paanch" to "paths" and heard ".bashrc" and "ls -a" correctly. Re-listening runs on Flash-Lite (large free limit), escalating to Flash only for parts that still disagree. Flash-Lite is never used to judge a whole transcript: that failed in Phase 0.
 - **R-QA-4 Check the checker.** A correction is applied only if it passes the automatic checks itself (Phase 0 saw the checker write Roman Urdu into the English).
 - **R-QA-5** One check round per piece. A second round runs only if the automatic checks still fail after round 1 and after targeted repair (R-QA-6), for example when a stretch of speech is still missing. Never more than 2. In Phase 0, round 2 applied 43 more corrections that changed no automatic check, so it is not worth the free-tier cost by default.
 - **R-QA-6 Targeted repair.** Any segment still failing after the rounds is re-translated on its own.
-- **R-QA-7 Needs your check.** Anything that still cannot be fixed is marked `[unclear]` and listed on the lecture with a play button. You can correct it on the phone or the desktop.
+- **R-QA-7 Needs your check.** Anything still unresolved is marked `[unclear]` and listed on the lecture. Each item plays just those seconds of audio and shows the competing versions ("Flash heard X, Flash-Lite heard Y"): pick one or type the fix, on phone or desktop. Nothing unsure is silently presented as certain.
 - **R-QA-8 Generated content is checked too** (text only, no audio, so it runs on Flash-Lite; whether Flash-Lite is strict enough for this is tested in Phase 2, with Flash as the fallback). The checker compares notes, flashcards and practice questions with the final transcript. Every claim must come from the lecture, and every flashcard's answer must match the moment it cites. Unsupported items are fixed or removed.
 - **R-QA-9 Quality badge** on every lecture, e.g. *"✓ Checked: 3 pieces, 2 rounds, 57 fixes, nothing needs your check"* or *"⚠ 2 parts need your check"*.
+- **R-QA-10 Sense check.** After the transcript passes, the checker reads the English and flags anything that makes no sense for the subject (Phase 0 example: "change the block chain" in a lecture about derivatives, really "change in function"). Flagged parts go back to R-QA-3b.
+- **R-QA-11 Learning from your corrections.** Every correction you make is saved to that subject's glossary as a known mishearing (e.g. *paanch* → "paths" in Programming for AI). It is used as context for future lectures, and the app suggests the same fix wherever the same mistake appears in other transcripts.
 
 ### 4.4 Notes
 - **R-NOTE-1** Notes are Markdown files, editable on the phone and on the web with a preview.
@@ -211,7 +221,7 @@ Notes on platform choices:
 | Task | Primary | Fallback |
 | --- | --- | --- |
 | Transcription + English, listening to the audio | Gemini 3.5 Flash, whole lecture, with context | Same model on 30-minute pieces → Gemini 3.5 Flash-Lite → Groq `whisper-large-v3` (translate) |
-| Caution-loop checker, listening again | Decided in Phase 2 (R-QA-3) | Wait and retry |
+| Second draft + re-listening to short doubtful clips | Gemini 3.5 Flash-Lite | Gemini 3.5 Flash for parts that still disagree |
 | Targeted re-translation of one segment | Gemini Flash | Gemini Flash-Lite |
 | Summary + notes (reads photos) | Gemini Flash | Gemini Flash-Lite |
 | Flashcards + practice questions | Gemini Flash | Gemini Flash-Lite |
@@ -226,8 +236,8 @@ Chosen from the Phase 0 test ([findings](../phase0-findings.md)). Model names ar
 | Service | Reported free limit | Expected use |
 | --- | --- | --- |
 | Groq Whisper | 8 h audio/day, 2 h/hour, 25 MB/file, 2,000 requests/day | Last-resort fallback only |
-| Gemini Flash | ~20 requests/day per model version (reported) | About 4 per lecture (draft, check, notes, cards): ~64 a week, 16 on Thursday |
-| Gemini Flash-Lite | ~500 requests/day | Drafts (about 3 per lecture), chat, grading |
+| Gemini Flash | ~20 requests/day per model version (reported) | About 3–4 per lecture (draft, notes, cards, escalated re-listens): ~50–64 a week, at most 16 on Thursday |
+| Gemini Flash-Lite | ~500 requests/day | Second drafts, re-listening to short clips (roughly 10–30 per lecture), chat, grading |
 | Tavily | 1,000 searches/month | ~33/day |
 | Wikipedia | No key, fair use | Fallback |
 | Google Drive | 15 GB | ~6 GB/semester |

@@ -91,6 +91,22 @@ The remaining ~15% is mostly spelling variation of Roman Urdu ("hai/he", "kese/k
 - Retries with growing pauses are required.
 - Extra API keys don't add free quota: limits are per project.
 
+## Making transcripts correct: two cheap tests
+
+**Finding doubtful parts for free.** The Flash and Flash-Lite transcripts of one clip were compared in 30-second windows by the words they share, with no API calls. The window where they agreed least (15%) was exactly where Flash-Lite had heard "paths" as *paanch*, the error a person had spotted by eye. Some other low-agreement windows were only timestamp offsets (the two models' clocks differed by about 30 s), so the real comparison lines drafts up by text, not time.
+
+**Re-listening to a short clip.** The 50 seconds around that spot were sent again to Flash-Lite:
+
+| | "paths" | ".bashrc" | "ls -a" |
+| --- | --- | --- | --- |
+| Flash-Lite, 10-minute clip | ❌ *paanch* | ❌ | ❌ |
+| Flash-Lite, 50-second clip | ✅ | ❌ ("HRC") | ❌ ("LS - a") |
+| Flash-Lite, 50-second clip + topic context | ✅ | ✅ | ✅ |
+
+One phrase ("Paths in Linux") was still misheard. Items like that go to the student's short "needs your check" list, and the correction is remembered for future lectures.
+
+Result: the checker question is settled. An independent Flash-Lite draft finds the doubtful parts, and Flash-Lite re-listens to short clips with context. Flash is only used for parts that still disagree (R-QA-3, R-QA-3b).
+
 ## Free-tier observations
 
 - **Groq:** 2,000 requests a day reported in the response headers. Audio-second limits are not in the headers.
@@ -99,7 +115,7 @@ The remaining ~15% is mostly spelling variation of Roman Urdu ("hai/he", "kese/k
 
 ## Decisions
 
-1. Gemini 3.5 Flash drafts the whole lecture in one pass (Roman Urdu original + English, speaker turns, with context). Fallbacks: 30-minute pieces, then Flash-Lite, then Whisper. The checker is decided in Phase 2.
+1. Gemini 3.5 Flash drafts the whole lecture in one pass (Roman Urdu original + English, speaker turns, with context). Fallbacks: 30-minute pieces, then Flash-Lite, then Whisper. Doubtful parts are found by comparing with a Flash-Lite draft and re-heard as short clips.
 2. The caution loop (R-QA-1 to R-QA-9) is part of processing.
 3. Recordings outside the timetable are filed as **Other** (R-TT-4).
 4. Before Phase 2: confirm the real Gemini free limits, test 30-minute pieces, and check that Drive access is shared between the web and Android clients.
