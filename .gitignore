@@ -32,3 +32,6 @@ Thumbs.db
 
 # Local tooling
 .remember/
+
+# Personal data that must not be published (timetable with names/rooms)
+private/

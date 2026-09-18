@@ -1,103 +1,82 @@
 # Notes App
 
-A notes app for iOS and Android built for university study. Take notes by course, record lectures, get timestamped transcripts, and use AI to turn a class into study notes, flashcards and practice questions.
+A personal study app for university. My Android phone records every class, names and files each recording from my timetable, and turns it into English transcripts, notes, flashcards and practice questions. A study chat can search my lectures and the web. Everything syncs through Google Drive, and a web app gives me full access from any computer. It runs entirely on free services.
 
-> **Status: planning.** There is no app code yet. This README is the plan for what gets built.
+> **Status: planning.** There is no app code yet. The full requirements and design are in [docs/specs/2026-09-18-notes-app-design.md](docs/specs/2026-09-18-notes-app-design.md).
 
 ## The problem
 
-In a lecture you're trying to listen, write and understand at the same time, and something always gets missed. Afterwards the audio (if you recorded it) sits in a folder you never open, and your notes don't match what was actually said. This app keeps notes, recordings and transcripts together per lecture, and uses AI to help you revise from them.
+Lectures here mix English, Urdu and Pashto, often in noisy rooms, and I read English best. In class it's hard to listen, write and understand at once, and recordings I never go back to don't help. This app keeps each lecture's audio, board photos, transcript and notes together, in English, and turns them into revision material automatically.
 
 ## Features
 
-### Notes
-- Organised by **semester → course → lecture**
-- Rich text notes, with photos of slides or the whiteboard
-- Full-text search across all notes and transcripts
-- Works offline: everything is saved on the phone first
+### Recording (Android)
+- One tap to record. The app already knows which class it is from the timetable.
+- Keeps recording with the screen off, in a pocket, and after the app is swiped away
+- Saves audio every 30 seconds, so a crash or dead battery loses seconds, not the lecture
+- Photos of the board or slides, and bookmarks, pinned to the moment they were taken
+- Automatic names: `Mon 21 Sep 2026 – Fundamentals of Accounting – Lecture 5`, with lectures and labs numbered separately, following the timetable
 
-### Lecture recording
-- One-tap recording that keeps going with the screen locked or the app in the background
-- **Bookmarks** during the lecture (e.g. "this is on the exam") saved as timestamps
-- Notes typed while recording are tied to the moment you wrote them, so tapping a note jumps to that point in the audio
-- Playback at variable speed
+### Automatic processing
+- Transcript in the original language plus an English translation, lined up by timestamp
+- English summary, key concepts and study notes as Markdown (`.md`) files
+- Tap any line of the transcript to hear that moment
 
-### Transcription
-- After class, the recording is sent to a cloud speech-to-text service and comes back as a timestamped transcript
-- If there's no signal in the lecture hall, the upload waits in a queue and goes when you're back online
-- Tap any line of the transcript to play that moment
+### Studying
+- **Flashcards** scheduled with FSRS (Anki's modern algorithm), with two buttons: *Forgot* / *Remembered*
+- **Practice questions**: mixed across lectures, exam-style multiple choice and numerical questions, and "explain it in your own words" with AI feedback
+- **Exam mode** and a one-page **revision sheet** per subject
+- **Study chat** per subject: answers from my lectures (with timestamps), and from the web and Wikipedia (with links)
 
-### AI study tools (Claude)
-- **Summary** of each lecture with the key concepts
-- **Clean notes**: merge your rough notes with the transcript into one tidy set of notes
-- **Flashcards and practice questions** generated from a lecture or a whole course
-- **Ask your lectures**: "what did the lecturer say about entropy?" answered from your own transcripts, with a link to the lecture and timestamp
-- **Revision sheet** per course before exams
+### Desktop
+- A web app, free on GitHub Pages. Sign in with Google to browse, play, edit, study and chat from any computer.
+- Everything syncs both ways through my own Google Drive
 
 ## How it works
 
 ```mermaid
 flowchart LR
-    App["Phone app<br/>Expo / React Native"] <--> Local[("On-device storage<br/>SQLite + audio files")]
-    App -- "audio, notes" --> API["Backend API<br/>(holds the API keys)"]
-    API --> STT["Cloud speech-to-text"]
-    API --> Claude["Claude API"]
-    API -- "transcript, summary,<br/>flashcards" --> App
+    Phone["Android app<br/>(records + processes)"] <-- sync --> Drive[("Google Drive<br/>shared copy")]
+    Web["Web app<br/>(any desktop)"] <-- sync --> Drive
+    Phone --> Router{{"AI router"}}
+    Web --> Router
+    Router --> Groq["Groq Whisper<br/>speech-to-text"]
+    Router --> Gemini["Gemini<br/>notes, flashcards, chat"]
+    Router --> Search["Tavily + Wikipedia<br/>web search"]
 ```
 
-The app never talks to the AI or transcription services directly. Anything inside an app binary can be extracted, so API keys live only on a small backend, which the app calls instead.
+There's no server of my own. API keys are entered once on each device and stored only there, never in this repo.
 
 ## Tech stack
 
-| Layer | Choice | Notes |
-| --- | --- | --- |
-| Mobile app | [Expo](https://expo.dev) (React Native) + TypeScript | One codebase for iOS and Android |
-| Navigation | Expo Router | File-based routes |
-| Audio | `expo-audio` | Background recording needs iOS background-audio config and an Android foreground service, so it requires a development build, not Expo Go |
-| Local data | `expo-sqlite`, `expo-file-system` | Courses, notes and transcripts in SQLite; audio as files |
-| Backend | Small TypeScript API (serverless) | Keeps keys secret, calls transcription and Claude |
-| Speech-to-text | Cloud provider, **not chosen yet** | See open questions |
-| AI | [Claude API](https://docs.anthropic.com) via `@anthropic-ai/sdk`, model `claude-opus-5` | Summaries, flashcards, Q&A over transcripts |
-
-## Privacy and recording consent
-
-- **Ask before recording.** Many universities have rules about recording lectures, and some lecturers don't allow it. Check your university's policy and ask the lecturer.
-- Recordings are for your own study. Don't share them.
-- Audio is sent to a third-party speech-to-text service, and transcripts and notes are sent to the Claude API for the AI features. The app should say this clearly and let you delete any recording or transcript.
-- API keys go in the backend's `.env` file, which is git-ignored. Never commit them.
+| Layer | Choice |
+| --- | --- |
+| App | [Expo](https://expo.dev) (React Native + TypeScript), one codebase for Android and web |
+| Recorder | Custom Kotlin module: a foreground service that saves audio in chunks |
+| Local data | SQLite on Android, IndexedDB in the browser |
+| Sync and storage | Google Drive API |
+| Speech-to-text | Groq Whisper (free tier) |
+| AI | Google Gemini API (free tier) |
+| Web search | Tavily (free tier) + Wikipedia |
+| Flashcards | [ts-fsrs](https://github.com/open-spaced-repetition/ts-fsrs) |
+| Web hosting | GitHub Pages |
 
 ## Roadmap
 
-- [x] Plan the app (this README)
-- [ ] **MVP**: scaffold the Expo app; courses and notes stored in SQLite; record and play back lectures; bookmarks
-- [ ] **Transcription**: backend API, cloud speech-to-text, timestamped transcript view, offline upload queue
-- [ ] **AI**: lecture summaries, clean notes, flashcards, practice questions
-- [ ] **Ask your lectures**: questions answered across a whole course with timestamp links
-- [ ] **Later**: accounts, cloud sync and backup, export to PDF / Markdown
+- [x] Requirements and design
+- [ ] **Phase 0**: test free transcription on real lectures (English/Urdu/Pashto, noisy rooms) and confirm the free-tier limits
+- [ ] **Phase 1**: Android recorder, timetable, automatic naming and numbering
+- [ ] **Phase 2**: transcripts, English translation, summaries and Markdown notes
+- [ ] **Phase 3**: Google Drive sync and the desktop web app
+- [ ] **Phase 4**: flashcards, practice questions, exam mode, revision sheets
+- [ ] **Phase 5**: study chat with web search
 
-## Open questions
+## Privacy and recording consent
 
-- **Which speech-to-text provider?** Compare accuracy on accents and technical vocabulary, price per hour of audio, word-level timestamps, and file size limits for 1–2 hour lectures.
-- **Where to host the backend?** Any serverless platform works; pick one with a free tier for development.
-- **Cost per lecture.** Transcription is priced per audio minute and AI per token. Estimate the cost of a typical 90-minute lecture before adding more AI features.
-- **Sync.** Local-only is enough to start; decide later whether accounts and cloud backup are worth the extra work.
-
-## Planned layout
-
-```
-notes-app/
-├── mobile/     # Expo app (screens, components, local database)
-├── server/     # Backend API: transcription and Claude calls
-└── README.md
-```
-
-## Getting started
-
-Nothing to run yet. Setup steps will go here once the app is scaffolded. You'll need:
-
-- [Node.js](https://nodejs.org) (LTS)
-- An Android phone or emulator (Android Studio) for testing
-- For iOS: a Mac with Xcode, or Expo's cloud builds (EAS Build) if you're on Windows
+- **Ask before recording.** Check the university's policy and ask each lecturer.
+- Recordings are for personal study only.
+- Audio is sent to Groq and text and photos to Google Gemini for processing. On free tiers, providers may use this content to improve their services.
+- API keys live only on my devices. Never commit them. `.env` files are git-ignored.
 
 ## License
 
