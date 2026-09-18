@@ -59,7 +59,8 @@ The student's consumer subscriptions (Google AI Pro, Claude Pro, ChatGPT Plus) d
 ### 4.2 Timetable, naming and numbering
 - **R-TT-1** This semester's timetable (Appendix A, plus teachers and rooms from the local `private/timetable.md`) is loaded during setup and can be edited on the phone or on the web.
 - **R-TT-2** Subjects group a **Lecture** stream (theory) and an optional **Lab** stream. Each stream has its own numbering.
-- **R-TT-3** Class detection when Record is tapped: (1) the slot whose time contains *now*; else (2) a slot starting within the next 15 minutes; else (3) a slot that ended within the last 10 minutes; else (4) ask for the subject and stream.
+- **R-TT-3** Class detection when Record is tapped: (1) the slot whose time contains *now*; else (2) a slot starting within the next 15 minutes; else (3) a slot that ended within the last 10 minutes; else (4) ask for the subject and stream, or **Other**.
+- **R-TT-4** Recordings outside the timetable (a workshop, seminar or talk) are filed as **Other** with a title you type, e.g. `Fri 11 Sep 2026 – Cyber Workshop`. They have no lecture number, are processed the same way, and are not added to the Class share folder unless you switch it on for them.
 - **R-NAME-1** Display name: `Mon 21 Sep 2026 – Fundamentals of Accounting – Lecture 5` or `… – Machine Learning – Lab 4`.
 - **R-NAME-2** File names use an ISO date prefix so they sort: `2026-09-21 Fundamentals of Accounting – Lecture 5`.
 - **R-NUM-1** Numbers follow the timetable: *number = scheduled slots of that stream from 2026-09-07 up to and including this one, minus slots marked cancelled or holiday, plus extra (make-up) sessions recorded before it.* Missed classes still use up a number.
@@ -69,12 +70,32 @@ The student's consumer subscriptions (Google AI Pro, Claude Pro, ChatGPT Plus) d
 
 ### 4.3 Processing
 - **R-PROC-1** Every recording is processed automatically. No tap needed.
-- **R-PROC-2** Transcription: the audio is split into 10-minute pieces with 5 seconds of overlap, each piece is transcribed, and the pieces are stitched into one timestamped transcript with the overlap removed.
-- **R-PROC-3** The transcript is kept in the original language and also translated to English, segment by segment, so both line up by timestamp.
+- **R-PROC-2** Transcription and translation happen in one pass: Gemini listens to each piece of audio and returns timestamped segments, each with the original text and an English translation. Pieces are up to 30 minutes with 10 seconds of overlap, stitched into one transcript with the overlap removed. (Phase 0 tested 10-minute pieces; 30 minutes is confirmed in Phase 2.)
+- **R-PROC-3** Nothing is marked done until it has passed the caution loop (4.3.1).
 - **R-PROC-4** From the English transcript, photos and bookmarks, the AI produces: a summary, key concepts, and study notes as Markdown (`.md`).
 - **R-PROC-5** Flashcards and practice questions are then generated (see 4.5).
 - **R-PROC-6** Processing is a persistent queue: it survives app restarts, waits for internet, and waits for free-tier limits to reset. Each recording shows its stage (e.g. "Transcribing 4/9", "Waiting for tomorrow's free limit").
 - **R-PROC-7** The device that has the audio processes it. The phone processes its own recordings. The web app processes files uploaded on the desktop while its tab is open, and resumes next time if the tab closes.
+
+#### 4.3.1 Caution loop
+Every transcript, and everything generated from it, is checked and repaired before it is marked done. Perfect output is not possible from noisy, mixed-language audio. The loop removes every fault it can detect and shows you the rest, instead of guessing.
+
+- **R-QA-1 Automatic checks** (free, on the device), run on every draft and after every repair:
+  - the output is in the expected format
+  - it covers the whole piece: starts within 20 s, ends within 45 s of the end, and has no gap over 60 s where there is speech
+  - timestamps are in order and inside the audio
+  - no repetition loops (the same 6-word phrase 3 or more times)
+  - every segment has English
+  - no Urdu script or Roman Urdu left in the English
+  - no empty segments
+- **R-QA-2** A draft that fails the automatic checks is redrafted: once more with the same model, then with a stronger one.
+- **R-QA-3 Independent check.** A stronger model (Gemini Flash) listens to the audio again and lists what is missing, wrong, invented or untranslated, with corrections. The checker is never the model that wrote the draft: in Phase 0, a model checking its own kind of output found nothing, even in transcripts known to be bad.
+- **R-QA-4 Check the checker.** A correction is applied only if it passes the automatic checks itself (Phase 0 saw the checker write Roman Urdu into the English).
+- **R-QA-5** At most 2 check rounds per piece. The loop stops early when the automatic checks pass and the checker finds 3 or fewer problems.
+- **R-QA-6 Targeted repair.** Any segment still failing after the rounds is re-translated on its own.
+- **R-QA-7 Needs your check.** Anything that still cannot be fixed is marked `[unclear]` and listed on the lecture with a play button. You can correct it on the phone or the desktop.
+- **R-QA-8 Generated content is checked too.** The checker compares notes, flashcards and practice questions with the final transcript. Every claim must come from the lecture, and every flashcard's answer must match the moment it cites. Unsupported items are fixed or removed.
+- **R-QA-9 Quality badge** on every lecture, e.g. *"✓ Checked: 3 pieces, 2 rounds, 57 fixes, nothing needs your check"* or *"⚠ 2 parts need your check"*.
 
 ### 4.4 Notes
 - **R-NOTE-1** Notes are Markdown files, editable on the phone and on the web with a preview.
@@ -182,32 +203,35 @@ Notes on platform choices:
 
 | Task | Primary | Fallback |
 | --- | --- | --- |
-| Transcription | Groq `whisper-large-v3` | Gemini audio transcription |
-| Translation to English (per ~10-minute segment) | Gemini Flash-Lite | Groq free text model |
+| Transcription + English, listening to the audio | Gemini 3.5 Flash-Lite | Gemini 3.5 Flash, then Groq `whisper-large-v3` (translate) as a last resort |
+| Caution-loop checker, listening again | Gemini 3.5 Flash (never the drafting model) | Another Gemini Flash version |
+| Targeted re-translation of one segment | Gemini Flash | Gemini Flash-Lite |
 | Summary + notes (reads photos) | Gemini Flash | Gemini Flash-Lite |
 | Flashcards + practice questions | Gemini Flash | Gemini Flash-Lite |
 | Grading "explain it" answers | Gemini Flash-Lite | Groq free text model |
 | Study chat | Gemini Flash-Lite | Groq free text model |
 | Web search | Tavily | Wikipedia API |
 
-Primary choices are confirmed or changed in Phase 0. Model names are configuration, not code.
+Chosen from the Phase 0 test ([findings](../phase0-findings.md)). Model names are configuration, not code.
 
 **Free-tier budget.** These figures come from third-party reports in September 2026 and are verified in Phase 0:
 
 | Service | Reported free limit | Expected use |
 | --- | --- | --- |
-| Groq Whisper | 8 h audio/day, 2 h/hour, 25 MB/file, 2,000 requests/day | ≤ 7 h on the busiest day (Thu) |
-| Gemini Flash | ~20 requests/day | ~2 per lecture, ~8/day |
-| Gemini Flash-Lite | ~500 requests/day | translation ~10 per lecture (~40/day) + chat + grading |
+| Groq Whisper | 8 h audio/day, 2 h/hour, 25 MB/file, 2,000 requests/day | Last-resort fallback only |
+| Gemini Flash | ~20 requests/day per model version | Checks, notes and cards: about 6–10 per lecture, about 100–160 a week (a single version allows ~140) |
+| Gemini Flash-Lite | ~500 requests/day | Drafts (about 3 per lecture), chat, grading |
 | Tavily | 1,000 searches/month | ~33/day |
 | Wikipedia | No key, fair use | Fallback |
 | Google Drive | 15 GB | ~6 GB/semester |
+
+**Gemini Flash is the tight spot.** Three things keep it inside the free tier: 30-minute pieces, catching up on Friday to Sunday (no classes), and spreading work across Gemini Flash versions, which reportedly have separate free limits. The real limits are read from AI Studio before Phase 2.
 
 The router records usage per provider per day. When a limit is hit, it moves to the fallback. When the fallbacks are also used up, the job waits until the next day's reset.
 
 ### 6.3 Processing stages
 
-`recorded → joined → transcribing (n/m) → translating (n/m) → notes → flashcards → done`
+`recorded → joined → drafting (n/m) → checking (piece n, round r) → notes → flashcards → checking content → done`, with anything left over listed under **needs your check**
 
 Any stage can go to `waiting (reason, retry at)` or `failed (reason)`. A job's state is stored with the recording and syncs, so both devices show progress. A failed job can be retried by hand.
 
@@ -245,6 +269,8 @@ Both apps sign in to one Google Cloud project using the `drive.file` scope, so t
 | Storage full while recording | Stop cleanly, keep what was recorded, notify |
 | No internet | Queue and sync wait. Everything local keeps working |
 | Free limit reached (HTTP 429) | Respect the retry-after time, then fall back, then wait for the daily reset. Status shown on the recording |
+| Model overloaded (HTTP 503, seen in Phase 0) | Retry with back-off, then use the fallback model |
+| Checker's correction fails the checks | Correction rejected, original kept, counted in the badge |
 | Bad AI output (invalid JSON) | Retry once with the same input, then mark failed with a Retry button |
 | Invalid API key | Processing pauses and settings shows which key is wrong |
 | Google sign-in expired | Sync pauses and a banner asks you to sign in again. Local work continues |
@@ -253,7 +279,7 @@ Both apps sign in to one Google Cloud project using the `drive.file` scope, so t
 
 ## 8. Testing
 
-- **Unit tests (pure logic):** class detection, numbering with holidays, cancellations and make-ups, naming, overlap stitching of transcripts, sync merge rules, AI router fallback and usage counting, FSRS scheduling wrapper.
+- **Unit tests (pure logic):** caution-loop checks (repetition, Roman Urdu, coverage, gaps), using the kinds of faults seen in Phase 0 as fixtures, class detection, numbering with holidays, cancellations and make-ups, naming, overlap stitching of transcripts, sync merge rules, AI router fallback and usage counting, FSRS scheduling wrapper.
 - **Integration tests:** processing queue with fake providers (success, 429, bad JSON, timeout); sync engine against a fake Drive.
 - **On-device checklist (S23 Ultra):**
   - record 10 minutes with the screen off
@@ -277,12 +303,7 @@ Sources: [SRS benchmark](https://expertium.github.io/Benchmark.html), [ts-fsrs](
 
 Each phase ends with something usable.
 
-0. **Test the free services (spike, throwaway code).**
-   - Record 2–3 real lectures with the phone's built-in recorder: one theory class, one lab, and the noisiest room.
-   - Run them through Groq Whisper (large-v3 and turbo) and Gemini transcription, and translate to English.
-   - Success means you can follow the English and it matches what you remember of the class.
-   - Also record: the real free-tier limits, and whether Drive `drive.file` access is shared between the web and Android clients.
-   - Output: a short findings note and the final provider choices.
+0. **Test the free services.** ✅ Done 2026-09-18 ([findings](../phase0-findings.md)). Gemini listening directly beats Whisper by a wide margin. Flash-Lite writes the drafts and Flash checks them. Whisper is a last resort only. Still to confirm before Phase 2: the real free limits (AI Studio), 30-minute pieces, and Drive access being shared between the web and Android clients.
 1. **Recorder, timetable and naming.** Android app that records reliably and files every class correctly. Usable from day one, before any AI.
 2. **Processing.** Transcripts (original + English), summaries and Markdown notes, with the queue and the AI router.
 3. **Drive sync and web app.** Everything on the desktop, editable both ways.
@@ -291,7 +312,9 @@ Each phase ends with something usable.
 
 ## 11. Risks and open questions
 
-- **Pashto/Urdu transcription quality.** This is the biggest risk. If no free provider is usable, the fallback is to rely on the English parts plus photos and bookmarks, or to revisit the budget.
+- **Transcription quality.** Tested on three real clips: after the caution loop, the English is good enough to study from. There was little Pashto in them, so Pashto-heavy lectures are still untested.
+- **Gemini Flash free limit.** The caution loop depends on it. See the mitigations in 6.2.
+- **The checker keeps finding small things.** Round 2 found 44 more corrections on a clip that already passed, so the loop is capped at 2 rounds.
 - **Free tiers change without notice.** This is why the AI router and its fallbacks exist. The limits in 6.2 are reported, not guaranteed.
 - **Content privacy on free tiers.** Lecture content may be used by providers to improve their products.
 - **Google OAuth in "testing" mode** can expire sign-ins every 7 days. The OAuth app may need to be published (the `drive.file` scope does not need Google's review) to avoid weekly sign-ins. This is checked in Phase 0 or 3.

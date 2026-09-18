@@ -18,7 +18,9 @@ Lectures here mix English, Urdu and Pashto, often in noisy rooms, and I read Eng
 - Automatic names: `Mon 21 Sep 2026 – Fundamentals of Accounting – Lecture 5`, with lectures and labs numbered separately, following the timetable
 
 ### Automatic processing
-- Transcript in the original language plus an English translation, lined up by timestamp
+- Gemini listens to the audio and writes the transcript plus an English translation in one pass
+- A **caution loop** checks every transcript: automatic checks, then a stronger AI model listens again and corrects mistakes. Anything it can't fix is shown to me instead of guessed
+- Transcript in the original language plus English, lined up by timestamp
 - English summary, key concepts and study notes as Markdown (`.md`) files
 - Tap any line of the transcript to hear that moment
 
@@ -41,8 +43,8 @@ flowchart LR
     Web["Web app<br/>(any desktop)"] <-- sync --> Drive
     Phone --> Router{{"AI router"}}
     Web --> Router
-    Router --> Groq["Groq Whisper<br/>speech-to-text"]
-    Router --> Gemini["Gemini<br/>notes, flashcards, chat"]
+    Router --> Gemini["Gemini<br/>transcripts, checks, notes,<br/>flashcards, chat"]
+    Router --> Groq["Groq Whisper<br/>last-resort fallback"]
     Router --> Search["Tavily + Wikipedia<br/>web search"]
 ```
 
@@ -54,8 +56,8 @@ This repo and app ship with **no API keys**. Everyone who uses the code adds the
 
 | Service | Used for | Get a free key |
 | --- | --- | --- |
-| Groq | Speech-to-text (Whisper) | https://console.groq.com/keys |
-| Google Gemini | Notes, flashcards, study chat | https://aistudio.google.com/apikey |
+| Google Gemini | Transcripts, checks, notes, flashcards, study chat | https://aistudio.google.com/apikey |
+| Groq | Backup speech-to-text (Whisper) | https://console.groq.com/keys |
 | Tavily | Web search in the study chat | https://app.tavily.com |
 
 - **In the app:** paste them into Settings on each device (phone and browser). They're stored only on that device and sent only to their own provider.
@@ -69,8 +71,8 @@ This repo and app ship with **no API keys**. Everyone who uses the code adds the
 | Recorder | Custom Kotlin module: a foreground service that saves audio in chunks |
 | Local data | SQLite on Android, IndexedDB in the browser |
 | Sync and storage | Google Drive API |
-| Speech-to-text | Groq Whisper (free tier) |
-| AI | Google Gemini API (free tier) |
+| Transcription + AI | Google Gemini API (free tier): Flash-Lite drafts, Flash checks |
+| Backup speech-to-text | Groq Whisper (free tier) |
 | Web search | Tavily (free tier) + Wikipedia |
 | Flashcards | [ts-fsrs](https://github.com/open-spaced-repetition/ts-fsrs) |
 | Web hosting | GitHub Pages |
@@ -78,7 +80,7 @@ This repo and app ship with **no API keys**. Everyone who uses the code adds the
 ## Roadmap
 
 - [x] Requirements and design
-- [ ] **Phase 0**: test free transcription on real lectures (English/Urdu/Pashto, noisy rooms) and confirm the free-tier limits
+- [x] **Phase 0**: test free transcription on real lectures. See [findings](docs/phase0-findings.md)
 - [ ] **Phase 1**: Android recorder, timetable, automatic naming and numbering
 - [ ] **Phase 2**: transcripts, English translation, summaries and Markdown notes
 - [ ] **Phase 3**: Google Drive sync and the desktop web app
@@ -89,7 +91,7 @@ This repo and app ship with **no API keys**. Everyone who uses the code adds the
 
 - **Ask before recording.** Check the university's policy and ask each lecturer.
 - Recordings are for personal study only. Share transcripts with classmates only if the lecturer is fine with it.
-- Audio is sent to Groq and text and photos to Google Gemini for processing. On free tiers, providers may use this content to improve their services.
+- Audio, text and photos are sent to Google Gemini (and audio to Groq as a backup) for processing. On free tiers, providers may use this content to improve their services.
 - API keys live only on my devices. Never commit them. `.env` files are git-ignored.
 
 ## License

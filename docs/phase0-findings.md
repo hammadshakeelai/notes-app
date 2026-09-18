@@ -1,0 +1,76 @@
+# Phase 0 findings: free transcription test
+
+- **Date:** 2026-09-18
+- **Question:** Can free services turn our lectures (English, Urdu and Pashto mixed, noisy rooms) into English we can study from?
+- **Answer:** Yes: Gemini listening directly, followed by an independent check.
+
+Recordings, transcripts and the test script are kept in the git-ignored `private/` folder. This note contains no lecture content.
+
+## Test material
+
+Three clips recorded on a Samsung S23 Ultra with the built-in Voice Recorder (AAC, 48 kHz mono, 128 kbps, about 58 MB per hour), converted to 16 kHz mono MP3 at 64 kbps for the test:
+
+| Clip | Length |
+| --- | --- |
+| Programming for AI lecture, minutes 10–20 | 10:00 |
+| Machine Learning lecture, minutes 10–20 | 10:00 |
+| Cyber security workshop (outside the timetable) | 9:17 |
+
+The rooms were never quiet (no stretch below −45 dB lasting 8 s or more).
+
+## Transcription methods compared
+
+| Method | Result | Time per 10 min |
+| --- | --- | --- |
+| Groq Whisper large-v3-turbo | ❌ Invented repeated sentences (the same phrase up to 10 times) | 3–5 s |
+| Groq Whisper large-v3 (original language) | ❌ Urdu-script output garbled in places, repetition loops | 5–9 s |
+| Groq Whisper large-v3 (its own English translation) | 🟡 About half the meaning survives | 3–4 s |
+| Whisper text → Gemini Flash-Lite translation | ❌ Carries Whisper's errors through | 10–13 s |
+| **Gemini 3.5 Flash, listening to the audio** | ✅ Clear, followable English | 25–45 s |
+| **Gemini 3.5 Flash-Lite, listening to the audio** | ✅ Nearly as clear, same amount of content (~1,100–1,600 English words per clip) | 16–23 s |
+| Gemini 3.5 Transcribe | ❌ Returned an empty reply | — |
+| Gemini 3.8 Flash | ⚠️ Unavailable (HTTP 503, "high demand") | — |
+
+The student read all three clips and judged both Gemini methods "very good". Flash was better on specific words: at one point Flash-Lite heard "paths" as *paanch* (Urdu for "five").
+
+## Faults found
+
+- **Untranslated English:** Flash-Lite left 23 of 63 English segments in Roman Urdu on one clip. Flash did not.
+- **Malformed output:** Gemini once returned broken JSON. A strict response schema fixed it.
+- **Truncated output:** Gemini's internal reasoning used up the output limit. Low thinking effort and a higher output limit fixed it.
+- **Overload:** Gemini 3.8 Flash was unavailable during the test.
+
+## The caution loop works, if the checker is a different, stronger model
+
+| Checker | On Flash-Lite drafts | On Whisper turbo (known bad) |
+| --- | --- | --- |
+| Gemini 3.5 Flash-Lite (same model family) | 0–1 problems | **0 problems**, so it can't be trusted |
+| Gemini 3.5 Flash | 4, 24 and 5 problems, including the "paths" / *paanch* mistake | — |
+
+One full loop on the worst clip (automatic checks → Flash check → apply fixes → re-check):
+
+| Round | Checker found | Applied | Rejected | Untranslated segments left |
+| --- | --- | --- | --- | --- |
+| Start | — | — | — | 23 / 63 |
+| 1 | 56 | 56 | 0 | 1 / 63 |
+| 2 | 44 | 43 | 1 (the fix itself was Roman Urdu) | 1 / 63 |
+
+Takeaways, now requirements R-QA-1 to R-QA-9 in the design document:
+- Automatic checks catch loops, gaps, empty segments, Urdu script and Roman Urdu in English.
+- The checker must be a different, stronger model.
+- The checker's own corrections must pass the automatic checks before they are applied.
+- Returns fall off after round 1, so the loop is capped at 2 rounds.
+- A segment still failing after the rounds gets a targeted repair. Anything left is shown to the student instead of being guessed.
+
+## Free-tier observations
+
+- **Groq:** 2,000 requests a day reported in the response headers. Audio-second limits are not in the headers.
+- **Gemini:** no rate-limit headers. 10 requests on Gemini 3.5 Flash and 12 on Flash-Lite during the test, with no 429 errors. Real limits to be read from AI Studio.
+- **Size:** 10 minutes of audio is about 15,000 Gemini input tokens. A draft is about 3,500–7,700 output tokens.
+
+## Decisions
+
+1. Gemini 3.5 Flash-Lite drafts (original + English, one pass), Gemini 3.5 Flash checks, Whisper is a last resort.
+2. The caution loop (R-QA-1 to R-QA-9) is part of processing.
+3. Recordings outside the timetable are filed as **Other** (R-TT-4).
+4. Before Phase 2: confirm the real Gemini free limits, test 30-minute pieces, and check that Drive access is shared between the web and Android clients.
