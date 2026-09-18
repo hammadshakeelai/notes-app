@@ -2,7 +2,7 @@
 
 A personal study app for university. My Android phone records every class, names and files each recording from my timetable, and turns it into English transcripts, notes, flashcards and practice questions. A study chat can search my lectures and the web. Everything syncs through Google Drive, and a web app gives me full access from any computer. It runs entirely on free services.
 
-> **Status: planning.** There is no app code yet. The full requirements and design are in [docs/specs/2026-09-18-notes-app-design.md](docs/specs/2026-09-18-notes-app-design.md).
+> **Status:** design approved, transcription tested (Phase 0). Next: **Milestone 1**, the timetable logic ([plan](docs/superpowers/plans/2026-09-18-m1-domain-core.md)). No app code yet.
 
 ## The problem
 
@@ -79,13 +79,30 @@ This repo and app ship with **no API keys**. Everyone who uses the code adds the
 
 ## Roadmap
 
-- [x] Requirements and design
-- [x] **Phase 0**: test free transcription on real lectures. See [findings](docs/phase0-findings.md)
-- [ ] **Phase 1**: Android recorder, timetable, automatic naming and numbering
-- [ ] **Phase 2**: transcripts, English translation, summaries and Markdown notes
-- [ ] **Phase 3**: Google Drive sync and the desktop web app
-- [ ] **Phase 4**: flashcards, practice questions, exam mode, revision sheets
-- [ ] **Phase 5**: study chat with web search
+| Milestone | What you get | Status |
+| --- | --- | --- |
+| M0 | Requirements, design, transcription test | ✅ Done |
+| M1 | Timetable logic: class detection, numbering, naming (tested, with CI) | Ready to build |
+| M2 | Android recorder that can't lose a lecture | Planned |
+| M3 | Android app used in class every day (no AI yet) | Planned |
+| M4 | Every lecture becomes a checked transcript and notes | Planned |
+| M5 | Everything on the desktop; classmates' shared folder | Planned |
+| M6 | Flashcards, practice questions, exam mode | Planned |
+| M7 | Study chat with web search | Planned |
+
+Details, exit criteria and requirement traceability: [docs/roadmap.md](docs/roadmap.md).
+
+## Documentation
+
+| Document | What it is |
+| --- | --- |
+| [Design](docs/specs/2026-09-18-notes-app-design.md) | Requirements (numbered, e.g. R-REC-1) and architecture |
+| [Decisions (ADRs)](docs/adr/README.md) | Why each major choice was made, and what was rejected |
+| [Roadmap](docs/roadmap.md) | Milestones, spikes, traceability, risk register |
+| [M1 plan](docs/superpowers/plans/2026-09-18-m1-domain-core.md) | Step-by-step, test-first build plan for the next milestone |
+| [Engineering conventions](docs/engineering.md) | Branches, commits, Definition of Done, tests, privacy checks |
+| [Phase 0 findings](docs/phase0-findings.md) | Transcription test results on real lectures |
+| [Project log](docs/project-log.md) | Dated record of what happened and why |
 
 ## Privacy and recording consent
 

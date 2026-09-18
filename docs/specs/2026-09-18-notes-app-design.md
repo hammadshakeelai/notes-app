@@ -330,7 +330,7 @@ Sources: [SRS benchmark](https://expertium.github.io/Benchmark.html), [ts-fsrs](
 
 ## 10. Build phases
 
-Each phase ends with something usable.
+Each phase ends with something usable. Phases are tracked as milestones M1–M7 in the [roadmap](../roadmap.md): Phase 1 is split into M1 (domain core), M2 (recorder module) and M3 (Android app v1), and Phases 2–5 are M4–M7.
 
 0. **Test the free services.** ✅ Done 2026-09-18 ([findings](../phase0-findings.md)). Gemini listening directly beats Whisper by a wide margin. Gemini 3.5 Flash drafts whole lectures with context. Flash-Lite makes an independent second draft to find doubtful parts and re-listens to them as short clips. Whisper is a last resort only. Real free limits confirmed (6.2). Still to test before Phase 2: Gemini 3.5 Transcribe Live, Gemini 3 Flash and 2.5 Flash quality on Roman Urdu, 30-minute pieces, and Drive access being shared between the web and Android clients.
 1. **Recorder, timetable and naming.** Android app that records reliably and files every class correctly. Usable from day one, before any AI.
