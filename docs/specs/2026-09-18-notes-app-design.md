@@ -220,27 +220,36 @@ Notes on platform choices:
 
 | Task | Primary | Fallback |
 | --- | --- | --- |
-| Transcription + English, listening to the audio | Gemini 3.5 Flash, whole lecture, with context | Same model on 30-minute pieces → Gemini 3.5 Flash-Lite → Groq `whisper-large-v3` (translate) |
+| Transcription + English, listening to the audio | Gemini 3.5 Flash, whole lecture, with context (or Gemini 3.5 Transcribe Live if it passes its test) | Gemini 3 Flash → 2.5 Flash → 30-minute pieces → Gemini 3.5 Flash-Lite → Groq `whisper-large-v3` (translate) |
 | Second draft + re-listening to short doubtful clips | Gemini 3.5 Flash-Lite | Gemini 3.5 Flash for parts that still disagree |
 | Targeted re-translation of one segment | Gemini Flash | Gemini Flash-Lite |
 | Summary + notes (reads photos) | Gemini Flash | Gemini Flash-Lite |
 | Flashcards + practice questions | Gemini Flash | Gemini Flash-Lite |
-| Grading "explain it" answers | Gemini Flash-Lite | Groq free text model |
-| Study chat | Gemini Flash-Lite | Groq free text model |
-| Web search | Tavily | Wikipedia API |
+| Grading "explain it" answers | Gemini Flash-Lite | Gemma 4 |
+| Study chat | Gemini Flash-Lite | Gemma 4 |
+| Web search | Tavily, and Google Search grounding on Gemini 2.5 | Wikipedia API |
 
 Chosen from the Phase 0 test ([findings](../phase0-findings.md)). Model names are configuration, not code.
 
-**Free-tier budget.** These figures come from third-party reports in September 2026 and are verified in Phase 0:
+**Free-tier budget.** Real limits from AI Studio (https://ai.dev/rate-limit), 2026-09-18. Limits are per model, per project:
 
-| Service | Reported free limit | Expected use |
+| Service | Free limit | Used for |
 | --- | --- | --- |
-| Groq Whisper | 8 h audio/day, 2 h/hour, 25 MB/file, 2,000 requests/day | Last-resort fallback only |
-| Gemini Flash | ~20 requests/day per model version (reported) | About 3–4 per lecture (draft, notes, cards, escalated re-listens): ~50–64 a week, at most 16 on Thursday |
-| Gemini Flash-Lite | ~500 requests/day | Second drafts, re-listening to short clips (roughly 10–30 per lecture), chat, grading |
-| Tavily | 1,000 searches/month | ~33/day |
+| Gemini 3.5 Flash | 5/min, 250K tokens/min, 20/day | Main drafts, notes, cards: about 3–4 per lecture, at most 16 on Thursday |
+| Gemini 3 Flash, 2.5 Flash (also 3.6, 3.7, 3.8 Flash) | 5/min, 250K tokens/min, 20/day each | Fallbacks when 3.5 Flash is used up or overloaded (quality tested in Phase 2) |
+| Gemini 3.5 Flash-Lite, 3.1 Flash-Lite | 15/min, 250K tokens/min, 500/day each | Second drafts, re-listening to short clips, chat |
+| Gemma 4 26B / 31B | 30/min, 16K tokens/min, 14,400/day each | Small text-only jobs: grading answers, simple chat replies, sense checks |
+| Google Search grounding (Gemini 2.5 models) | 1,500/day, within those models' 20 requests/day | Web search in the study chat, alongside Tavily |
+| Gemini 3.5 Transcribe Live, 3.5 Live Translate (Live API) | 20K tokens/min, no daily cap shown | **Candidate** for unlimited transcription (~13 min of audio per minute). Tested before Phase 2 |
+| Groq Whisper | 8 h audio/day, 2,000 requests/day | Last-resort fallback |
+| Tavily | 1,000 searches/month | Web search in the study chat |
 | Wikipedia | No key, fair use | Fallback |
-| Google Drive | 15 GB | ~6 GB/semester |
+| Google Drive | 15 GB free (more with a Google One plan) | ~6 GB of audio a semester |
+
+Notes:
+- **250K tokens a minute means one whole lecture per minute per model** (a 90-minute lecture is about 135K audio tokens). The queue spaces requests out.
+- **Keep the project for this app only.** Every tool using a key from the same project shares these limits. In testing, other usage in the project had already used 3.7 Flash to 21/20.
+- Using several *models* is how the limits are designed. Spreading one app across several *projects* is not (see Non-goals).
 
 **Overload matters more than the daily limit.** Whole-lecture requests keep Flash use inside the free limit (16 a day at most). But during testing Gemini 3.6, 3.7 and 3.8 Flash were all overloaded (HTTP 503), and 3.5 Flash was for a while too. The queue retries with growing pauses, so a lecture may finish hours later on a busy day. Real limits: https://ai.dev/rate-limit.
 
@@ -323,7 +332,7 @@ Sources: [SRS benchmark](https://expertium.github.io/Benchmark.html), [ts-fsrs](
 
 Each phase ends with something usable.
 
-0. **Test the free services.** ✅ Done 2026-09-18 ([findings](../phase0-findings.md)). Gemini listening directly beats Whisper by a wide margin. Gemini 3.5 Flash drafts whole lectures with context. Flash-Lite makes an independent second draft to find doubtful parts and re-listens to them as short clips. Whisper is a last resort only. Still to confirm before Phase 2: the real free limits (AI Studio), 30-minute pieces, and Drive access being shared between the web and Android clients.
+0. **Test the free services.** ✅ Done 2026-09-18 ([findings](../phase0-findings.md)). Gemini listening directly beats Whisper by a wide margin. Gemini 3.5 Flash drafts whole lectures with context. Flash-Lite makes an independent second draft to find doubtful parts and re-listens to them as short clips. Whisper is a last resort only. Real free limits confirmed (6.2). Still to test before Phase 2: Gemini 3.5 Transcribe Live, Gemini 3 Flash and 2.5 Flash quality on Roman Urdu, 30-minute pieces, and Drive access being shared between the web and Android clients.
 1. **Recorder, timetable and naming.** Android app that records reliably and files every class correctly. Usable from day one, before any AI.
 2. **Processing.** Transcripts (original + English), summaries and Markdown notes, with the queue and the AI router.
 3. **Drive sync and web app.** Everything on the desktop, editable both ways.

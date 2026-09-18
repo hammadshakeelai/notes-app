@@ -110,7 +110,16 @@ Result: the checker question is settled. An independent Flash-Lite draft finds t
 ## Free-tier observations
 
 - **Groq:** 2,000 requests a day reported in the response headers. Audio-second limits are not in the headers.
-- **Gemini:** no rate-limit headers. About 20 requests on Gemini 3.5 Flash and 15 on Flash-Lite during the test, with no 429 errors. Real limits: https://ai.dev/rate-limit.
+- **Gemini:** no rate-limit headers, but AI Studio (https://ai.dev/rate-limit) shows the real free limits per model:
+  - Flash models: 20/day each
+  - Flash-Lite models: 500/day each
+  - 250K tokens a minute
+  - Gemma 4: 14,400/day
+  - Search grounding: 1,500/day on Gemini 2.5
+  - Live API models (including 3.5 Transcribe Live): no daily cap shown, 20K tokens/min
+
+  Peak use during the test: 3.5 Flash 17/20 per day and 78.7K tokens a minute (the whole-lecture request), and Flash-Lite 16/500.
+- **Why Gemini 3.5 Transcribe returned nothing:** it is listed under the Live (streaming) API, with 10K tokens a minute. Calling it like a normal model was the wrong way to use it. Gemini 3.5 Transcribe *Live* is the candidate to test.
 - **Size:** 10 minutes of audio is about 15,000 Gemini input tokens. A draft is about 3,500–7,700 output tokens.
 
 ## Decisions
