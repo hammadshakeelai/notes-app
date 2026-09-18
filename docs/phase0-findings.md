@@ -62,15 +62,44 @@ Takeaways, now requirements R-QA-1 to R-QA-9 in the design document:
 - Round 1 did the real work. Round 2's 43 applied corrections changed no automatic check (untranslated segments stayed at 1/63), so it is either rewording or improvement the checks can't see. Round 2 now runs only when the automatic checks still fail.
 - A segment still failing after the rounds gets a targeted repair. Anything left is shown to the student instead of being guessed.
 
+## Getting close to the Gemini website
+
+The student supplied a transcript made on the Gemini website (consumer app) of a 78-minute video call, and called it the best they had seen. Its style: **Roman Urdu** (Latin letters) with English kept as spoken, one line per speaker turn, names and terms spelled correctly. We asked the free API for the same style ("website-style prompt") on the first 10 minutes. Only that excerpt was sent, because the call was confidential.
+
+| Setup | Words matching the website | Names right (of 3) | Everyday-word slips |
+| --- | --- | --- | --- |
+| Flash-Lite, website-style prompt | 82% | 0 | Several (e.g. "Saudi" for "Sorry") |
+| Flash-Lite + names as context | 80% | 2 | Several |
+| Flash-Lite + context, then a Flash check without context | 83% | 1 (the check undid one) | Several |
+| Flash, website-style prompt | 85% | 0 | None |
+| **Flash + names as context** | **85%** | **3** | **None** |
+| Gemini 3.1 Pro | Not free: "limit: 0" on the free tier | — | — |
+
+The remaining ~15% is mostly spelling variation of Roman Urdu ("hai/he", "kese/kaise"), which counts as a mismatch even when both are right. Flash with context also adds **timestamps and speaker names**, which the website version doesn't have. Its one visible fault was merging two short speaker turns.
+
+**Whole lecture in one request:** the full 52-minute Programming for AI lecture was sent to Gemini 3.5 Flash in one request (16.8 MB, audio at 32 kbps).
+- It returned 623 segments in 196 s: about 79,000 input tokens and 40,000 output tokens, finishing normally.
+- Every minute had text (about 100–180 words a minute).
+- The automatic checks found one out-of-place timestamp, 8 of 623 English segments in Roman Urdu, and one repeated phrase (possibly genuine).
+
+**Overload:** during the evening test, Gemini 3.6, 3.7 and 3.8 Flash all returned HTTP 503 ("high demand"), and 3.5 Flash did so twice before succeeding on retry.
+
+**Takeaways:**
+- The original transcript is written in Roman Urdu, website-style.
+- Gemini 3.5 Flash drafts the whole lecture, with context (subject, teacher, glossary).
+- Context must go to the checker too.
+- Retries with growing pauses are required.
+- Extra API keys don't add free quota: limits are per project.
+
 ## Free-tier observations
 
 - **Groq:** 2,000 requests a day reported in the response headers. Audio-second limits are not in the headers.
-- **Gemini:** no rate-limit headers. 10 requests on Gemini 3.5 Flash and 12 on Flash-Lite during the test, with no 429 errors. Real limits to be read from AI Studio.
+- **Gemini:** no rate-limit headers. About 20 requests on Gemini 3.5 Flash and 15 on Flash-Lite during the test, with no 429 errors. Real limits: https://ai.dev/rate-limit.
 - **Size:** 10 minutes of audio is about 15,000 Gemini input tokens. A draft is about 3,500–7,700 output tokens.
 
 ## Decisions
 
-1. Gemini 3.5 Flash-Lite drafts (original + English, one pass), Gemini 3.5 Flash checks, Whisper is a last resort.
+1. Gemini 3.5 Flash drafts the whole lecture in one pass (Roman Urdu original + English, speaker turns, with context). Fallbacks: 30-minute pieces, then Flash-Lite, then Whisper. The checker is decided in Phase 2.
 2. The caution loop (R-QA-1 to R-QA-9) is part of processing.
 3. Recordings outside the timetable are filed as **Other** (R-TT-4).
 4. Before Phase 2: confirm the real Gemini free limits, test 30-minute pieces, and check that Drive access is shared between the web and Android clients.

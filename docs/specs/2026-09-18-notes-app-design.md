@@ -39,6 +39,7 @@ The student's consumer subscriptions (Google AI Pro, Claude Pro, ChatGPT Plus) d
 - Typing notes during class (photos and bookmarks only)
 - Automatic recording start (Android does not allow apps to start the microphone from the background; starting is always a manual tap)
 - Paid services of any kind
+- Several API keys, projects or Google accounts to stretch the free limits. Limits are per project, so extra keys don't help, and extra projects or accounts to get around limits are reported to be against Google's terms. A suspension would also hit the Google account that holds the Drive data
 
 ## 4. Requirements
 
@@ -70,7 +71,12 @@ The student's consumer subscriptions (Google AI Pro, Claude Pro, ChatGPT Plus) d
 
 ### 4.3 Processing
 - **R-PROC-1** Every recording is processed automatically. No tap needed.
-- **R-PROC-2** Transcription and translation happen in one pass: Gemini listens to each piece of audio and returns timestamped segments, each with the original text and an English translation. Pieces are up to 30 minutes with 10 seconds of overlap, stitched into one transcript with the overlap removed. (Phase 0 tested 10-minute pieces; 30 minutes is confirmed in Phase 2.)
+- **R-PROC-2** Transcription and translation happen in one pass. Gemini 3.5 Flash listens to the **whole recording in one request** (uploaded with the Gemini Files API) and returns timestamped segments, each with a speaker, the original and an English translation. The original is written like the Gemini website does it:
+  - **Roman Urdu** (Latin letters) for Urdu and Pashto, never Urdu script, with English words kept as spoken
+  - one segment per speaker turn, keeping short replies ("Jee jee", "Achha")
+  - speakers labelled **Teacher** / **Student**, or by name when known
+  Fallbacks, in order: the same model on 30-minute pieces, then Gemini Flash-Lite, then Groq Whisper.
+- **R-PROC-8 Context.** Every drafting and checking request includes: subject, stream, teacher's name, date, and a per-subject **glossary**: names and technical terms taken from earlier lectures' notes, plus any you add. In testing, context took names the model got right from 0 of 3 to 3 of 3.
 - **R-PROC-3** Nothing is marked done until it has passed the caution loop (4.3.1).
 - **R-PROC-4** From the English transcript, photos and bookmarks, the AI produces: a summary, key concepts, and study notes as Markdown (`.md`).
 - **R-PROC-5** Flashcards and practice questions are then generated (see 4.5).
@@ -86,10 +92,11 @@ Every transcript, and everything generated from it, is checked and repaired befo
   - timestamps are in order and inside the audio
   - no repetition loops (the same 6-word phrase 3 or more times)
   - every segment has English
-  - no Urdu script or Roman Urdu left in the English
+  - no Urdu script anywhere, and no Roman Urdu in the English (Roman Urdu is expected in the original)
+  - a single out-of-place timestamp (seen once in a 52-minute test) is repaired by placing it between its neighbours
   - no empty segments
 - **R-QA-2** A draft that fails the automatic checks is redrafted: once more with the same model, then with a stronger one.
-- **R-QA-3 Independent check.** A stronger model (Gemini Flash) listens to the audio again and lists what is missing, wrong, invented or untranslated, with corrections. The checker is never the model that wrote the draft: in Phase 0, a model checking its own kind of output found nothing, even in transcripts known to be bad.
+- **R-QA-3 Independent check.** A second pass listens to the audio again, with the same context, and lists what is missing, wrong, invented or untranslated, with corrections. Phase 0 showed that Flash-Lite cannot be the checker (it passed transcripts known to be bad) and that newer Flash versions are often overloaded. Phase 2 decides between two checkers for Flash drafts: (a) Gemini Flash re-listening to the whole lecture, or (b) an independent Flash-Lite draft, with Flash re-listening only where the two disagree.
 - **R-QA-4 Check the checker.** A correction is applied only if it passes the automatic checks itself (Phase 0 saw the checker write Roman Urdu into the English).
 - **R-QA-5** One check round per piece. A second round runs only if the automatic checks still fail after round 1 and after targeted repair (R-QA-6), for example when a stretch of speech is still missing. Never more than 2. In Phase 0, round 2 applied 43 more corrections that changed no automatic check, so it is not worth the free-tier cost by default.
 - **R-QA-6 Targeted repair.** Any segment still failing after the rounds is re-translated on its own.
@@ -203,8 +210,8 @@ Notes on platform choices:
 
 | Task | Primary | Fallback |
 | --- | --- | --- |
-| Transcription + English, listening to the audio | Gemini 3.5 Flash-Lite | Gemini 3.5 Flash, then Groq `whisper-large-v3` (translate) as a last resort |
-| Caution-loop checker, listening again | Gemini 3.5 Flash (never the drafting model) | Another Gemini Flash version |
+| Transcription + English, listening to the audio | Gemini 3.5 Flash, whole lecture, with context | Same model on 30-minute pieces → Gemini 3.5 Flash-Lite → Groq `whisper-large-v3` (translate) |
+| Caution-loop checker, listening again | Decided in Phase 2 (R-QA-3) | Wait and retry |
 | Targeted re-translation of one segment | Gemini Flash | Gemini Flash-Lite |
 | Summary + notes (reads photos) | Gemini Flash | Gemini Flash-Lite |
 | Flashcards + practice questions | Gemini Flash | Gemini Flash-Lite |
@@ -219,13 +226,13 @@ Chosen from the Phase 0 test ([findings](../phase0-findings.md)). Model names ar
 | Service | Reported free limit | Expected use |
 | --- | --- | --- |
 | Groq Whisper | 8 h audio/day, 2 h/hour, 25 MB/file, 2,000 requests/day | Last-resort fallback only |
-| Gemini Flash | ~20 requests/day per model version | 1 check per 30-minute piece + notes and cards (2 per lecture): about 84 a week, 22 on Thursday (7 h = 14 pieces). A single version allows about 140 a week |
+| Gemini Flash | ~20 requests/day per model version (reported) | About 4 per lecture (draft, check, notes, cards): ~64 a week, 16 on Thursday |
 | Gemini Flash-Lite | ~500 requests/day | Drafts (about 3 per lecture), chat, grading |
 | Tavily | 1,000 searches/month | ~33/day |
 | Wikipedia | No key, fair use | Fallback |
 | Google Drive | 15 GB | ~6 GB/semester |
 
-**Gemini Flash is the tight spot.** Weekly demand (~84) fits a single version's free limit (~140), but Monday to Thursday need about 21 a day against 20, so Thursday's lectures may finish processing a day or two later. The queue catches up on Friday to Sunday (no classes). If Gemini Flash versions have separate free limits, as reported but not yet verified, spreading work across them removes the delay. The real limits are read from AI Studio before Phase 2.
+**Overload matters more than the daily limit.** Whole-lecture requests keep Flash use inside the free limit (16 a day at most). But during testing Gemini 3.6, 3.7 and 3.8 Flash were all overloaded (HTTP 503), and 3.5 Flash was for a while too. The queue retries with growing pauses, so a lecture may finish hours later on a busy day. Real limits: https://ai.dev/rate-limit.
 
 The router records usage per provider per day. When a limit is hit, it moves to the fallback. When the fallbacks are also used up, the job waits until the next day's reset.
 
