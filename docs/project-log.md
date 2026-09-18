@@ -56,5 +56,5 @@ A dated record of what was done and why. Decisions are recorded in full in [ADRs
 ### Open items at end of session
 
 - License: not chosen yet (all rights reserved by default)
-- Spikes before Milestone 3 (processing): S1–S5 in the [roadmap](roadmap.md)
+- Spikes before Milestone 4 (processing): S1–S5 in the [roadmap](roadmap.md)
 - A new Google Cloud project dedicated to the Notes App (being done by the student)

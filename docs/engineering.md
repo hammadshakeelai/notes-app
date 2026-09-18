@@ -24,7 +24,7 @@ notes-app/
 
 ## Workflow
 
-- **Trunk-based.** `main` always builds and passes tests. Work happens on short-lived branches (`feat/…`, `fix/…`, `docs/…`, `spike/…`), merged through a pull request.
+- **Trunk-based.** `main` always builds and passes tests. Code changes happen on short-lived branches (`feat/…`, `fix/…`, `spike/…`), merged through a pull request. Docs-only changes (specs, ADRs, plans, the log) may be committed straight to `main`.
 - **One plan task = one commit or a small group of commits.** Each commit leaves the tests passing.
 - **Commit messages** follow [Conventional Commits](https://www.conventionalcommits.org): `feat:`, `fix:`, `test:`, `docs:`, `chore:`, `refactor:`. The body says *why*.
 - **Pull requests** link the plan task and the requirement IDs (e.g. `R-NUM-1`), and must pass CI.
