@@ -19,8 +19,8 @@ Lectures here mix English, Urdu and Pashto, often in noisy rooms, and I read Eng
 
 ### Automatic processing
 - Gemini listens to the audio and writes the transcript plus an English translation in one pass
-- A **caution loop** checks every transcript: automatic checks, then a stronger AI model listens again and corrects mistakes. Anything it can't fix is shown to me instead of guessed
-- Transcript in the original language plus English, lined up by timestamp
+- A **caution loop** checks every transcript: automatic checks, then a stronger AI model listens again and corrects mistakes. Anything it can't fix is shown to me instead of guessed, and my corrections are remembered for future lectures
+- Transcript in Roman Urdu as spoken (like the Gemini website writes it), with English under each line and who's speaking
 - English summary, key concepts and study notes as Markdown (`.md`) files
 - Tap any line of the transcript to hear that moment
 
@@ -71,7 +71,7 @@ This repo and app ship with **no API keys**. Everyone who uses the code adds the
 | Recorder | Custom Kotlin module: a foreground service that saves audio in chunks |
 | Local data | SQLite on Android, IndexedDB in the browser |
 | Sync and storage | Google Drive API |
-| Transcription + AI | Google Gemini API (free tier): Flash-Lite drafts, Flash checks |
+| Transcription + AI | Google Gemini API (free tier): Flash drafts whole lectures, Flash-Lite double-checks doubtful parts |
 | Backup speech-to-text | Groq Whisper (free tier) |
 | Web search | Tavily (free tier) + Wikipedia |
 | Flashcards | [ts-fsrs](https://github.com/open-spaced-repetition/ts-fsrs) |

@@ -26,7 +26,7 @@ The student's consumer subscriptions (Google AI Pro, Claude Pro, ChatGPT Plus) d
 ## 3. Goals and non-goals
 
 **Goals**
-- Recording that is hard to lose: survives screen-off, app swipe-away, UI crashes and phone calls. A dead battery loses at most about 30 seconds.
+- Recording that is hard to lose: survives screen-off, the phone in a pocket, app swipe-away, UI crashes and phone calls. A dead battery loses at most about 30 seconds. A phone that is switched off or out of battery cannot record at all (no app can), so for that case audio from another recorder can be imported (R-REC-12).
 - Zero typing to file a recording: subject, lecture/lab number and date come from the timetable.
 - Every class becomes English notes, flashcards and practice questions with no manual steps.
 - Everything is reachable and editable from a desktop browser.
@@ -244,11 +244,14 @@ Chosen from the Phase 0 test ([findings](../phase0-findings.md)). Model names ar
 
 **Overload matters more than the daily limit.** Whole-lecture requests keep Flash use inside the free limit (16 a day at most). But during testing Gemini 3.6, 3.7 and 3.8 Flash were all overloaded (HTTP 503), and 3.5 Flash was for a while too. The queue retries with growing pauses, so a lecture may finish hours later on a busy day. Real limits: https://ai.dev/rate-limit.
 
+- **R-PROC-9 Running short.** Google resets Gemini's daily limits at midnight Pacific time, which is noon in Pakistan. When a limit is close, work runs in this order: (1) drafting new lectures, (2) re-listening to doubtful parts, (3) notes, (4) flashcards and practice questions, (5) study chat. Nothing is dropped: lower-priority work waits for the next reset.
+- **R-PROC-10 Usage screen.** Settings shows each service's use today against its limit, and when it resets.
+
 The router records usage per provider per day. When a limit is hit, it moves to the fallback. When the fallbacks are also used up, the job waits until the next day's reset.
 
 ### 6.3 Processing stages
 
-`recorded → joined → drafting (n/m) → checking (piece n, round r) → notes → flashcards → checking content → done`, with anything left over listed under **needs your check**
+`recorded → joined → drafting → second draft → comparing → re-listening (n/m doubtful parts) → sense check → notes → flashcards → checking content → done`, with anything left over listed under **needs your check**
 
 Any stage can go to `waiting (reason, retry at)` or `failed (reason)`. A job's state is stored with the recording and syncs, so both devices show progress. A failed job can be retried by hand.
 
@@ -320,7 +323,7 @@ Sources: [SRS benchmark](https://expertium.github.io/Benchmark.html), [ts-fsrs](
 
 Each phase ends with something usable.
 
-0. **Test the free services.** ✅ Done 2026-09-18 ([findings](../phase0-findings.md)). Gemini listening directly beats Whisper by a wide margin. Flash-Lite writes the drafts and Flash checks them. Whisper is a last resort only. Still to confirm before Phase 2: the real free limits (AI Studio), 30-minute pieces, and Drive access being shared between the web and Android clients.
+0. **Test the free services.** ✅ Done 2026-09-18 ([findings](../phase0-findings.md)). Gemini listening directly beats Whisper by a wide margin. Gemini 3.5 Flash drafts whole lectures with context. Flash-Lite makes an independent second draft to find doubtful parts and re-listens to them as short clips. Whisper is a last resort only. Still to confirm before Phase 2: the real free limits (AI Studio), 30-minute pieces, and Drive access being shared between the web and Android clients.
 1. **Recorder, timetable and naming.** Android app that records reliably and files every class correctly. Usable from day one, before any AI.
 2. **Processing.** Transcripts (original + English), summaries and Markdown notes, with the queue and the AI router.
 3. **Drive sync and web app.** Everything on the desktop, editable both ways.
