@@ -25,7 +25,7 @@ M0 Inception + Phase 0 ✅
 | M1 | Timetable, naming and numbering logic, tested, with CI | S | `v0.1.0` | [plan](superpowers/plans/2026-09-18-m1-domain-core.md) | Ready |
 | M2 | Android recorder that can't lose a lecture | L | `v0.2.0` | Written when M1 is done | Not started |
 | M3 | Android app you can use in class every day (no AI yet) | M | `v0.3.0` | Written when M2 is done | Not started |
-| S1–S5 | Spikes that settle the unknowns before M4 | S | — | Below | Not started |
+| S1–S5 | Spikes that settle the unknowns before M4 | S | — | Below | S1, S2 done; S3–S5 open |
 | M4 | Every lecture becomes a checked transcript and notes | L | `v0.4.0` | Written after the spikes | Not started |
 | M5 | Everything on the desktop; classmates' shared folder | L | `v0.5.0` | — | Not started |
 | M6 | Flashcards, practice questions, exam mode, revision sheets | M | `v0.6.0` | — | Not started |
@@ -95,13 +95,13 @@ Sizes: S = a few focused sessions, M = one to two weeks part-time, L = two to fo
 
 Throwaway investigations. Results go into `docs/phase0-findings.md` (or a new findings file), and decisions into ADRs.
 
-| Spike | Question | Method | Pass means |
-| --- | --- | --- | --- |
-| S1 | Is Gemini 3.5 Transcribe Live (or Live Translate) good enough on our lectures, with no daily cap? | Stream 2 real lectures through the Live API; compare with Flash + context | The student rates it as good as Flash, and a 90-minute lecture finishes in under 15 minutes |
-| S2 | How good are the fallback models (Gemini 3 Flash, 2.5 Flash) at website-style Roman Urdu? | Same 10-minute clips and scoring as Phase 0 | Close to 3.5 Flash with context; if not, drop them from the chain |
-| S3 | Do 30-minute pieces stitch cleanly when a whole-lecture request fails? | Split a 90-minute lecture with 10 s overlap; check the joins | No duplicated or missing speech at the joins |
-| S4 | Can the Android and web OAuth clients share `drive.file` access? Can the OAuth app be published to avoid sign-ins expiring every 7 days? | Two clients in the new project, one test file | Each client reads the other's file; published status reached |
-| S5 | Which Android audio source and bitrate give the best transcripts? | Record the same class with 2 settings on 2 phones, or back-to-back | A clear winner, or no difference (then use the smaller files) |
+| Spike | Question | Method | Pass means | Result |
+| --- | --- | --- | --- | --- |
+| S1 | Is Gemini 3.5 Transcribe Live (or Live Translate) good enough on our lectures, with no daily cap? | Stream 2 real lectures through the Live API; compare with Flash + context | The student rates it as good as Flash, and a 90-minute lecture finishes in under 15 minutes | ❌ Failed: gaps and mixed scripts. Not used (ADR-0015) |
+| S2 | How good are the fallback models (Gemini 3 Flash, 2.5 Flash) at website-style Roman Urdu? | Same 10-minute clips and scoring as Phase 0 | Close to 3.5 Flash with context; if not, drop them from the chain | ✅ 3 Flash equal; 2.5 Flash dropped; 3.1 Flash-Lite strong but loops on some audio (ADR-0015) |
+| S3 | Do 30-minute pieces stitch cleanly when a whole-lecture request fails? | Split a 90-minute lecture with 10 s overlap; check the joins | No duplicated or missing speech at the joins | Open |
+| S4 | Can the Android and web OAuth clients share `drive.file` access? Can the OAuth app be published to avoid sign-ins expiring every 7 days? | Two clients in the new project, one test file | Each client reads the other's file; published status reached | Open |
+| S5 | Which Android audio source and bitrate give the best transcripts? | Record the same class with 2 settings on 2 phones, or back-to-back | A clear winner, or no difference (then use the smaller files) | Open |
 
 S5 can run during M2, since it needs the recorder.
 
@@ -114,7 +114,7 @@ S5 can run during M2, since it needs the recorder.
   - notes as Markdown
   - API key settings with a Test button
   - usage screen
-- **Requirements:** R-PROC-1 to R-PROC-10, R-QA-1 to R-QA-11, R-NOTE-1 to R-NOTE-3, R-SET-3, R-SET-4.
+- **Requirements:** R-PROC-1 to R-PROC-11, R-QA-1 to R-QA-11, R-NOTE-1 to R-NOTE-3, R-SET-3, R-SET-4.
 - **Exit criteria:**
   - One week of lectures processed with no taps.
   - Every lecture has a quality badge.
@@ -168,13 +168,13 @@ Every requirement in the design, and the milestone that delivers it. Split requi
 | R-NAME-1, R-NAME-2 | M1 | | R-SET-1 | M3 (most steps), M4 (keys), M5 (Google sign-in) |
 | R-NUM-1 | M1 | | R-SET-2 | M3 |
 | R-NUM-2 … R-NUM-4 | M1 (logic), M3 (screens, notifications) | | R-SET-3, R-SET-4 | M4 |
-| R-PROC-1 … R-PROC-10 | M4 | | | |
+| R-PROC-1 … R-PROC-11 | M4 | | | |
 
 ## Risk register
 
 | ID | Risk | Likelihood | Impact | Mitigation | Status |
 | --- | --- | --- | --- | --- | --- |
-| K1 | Google cuts free limits | Medium | High | Model fallback chain; Groq Whisper; priority queue; spike S1 (Live) may remove the daily cap | Open |
+| K1 | Google cuts free limits | Medium | High | Model fallback chain (ADR-0015); most work on Flash-Lite (500/day); Groq Whisper; priority queue | Open |
 | K2 | Gemini overload (503) delays processing | High | Low | Retries with growing pauses; fallbacks; lectures may finish hours later | Open |
 | K3 | Pashto-heavy lectures transcribe badly | Low | Medium | Context and glossary; caution loop; "needs your check" | Open |
 | K4 | Samsung kills the recorder | Medium | High | Foreground service in its own process; battery setup steps and reminders; M2 device checklist | Open |

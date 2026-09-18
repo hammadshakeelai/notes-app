@@ -28,6 +28,7 @@ A dated record of what was done and why. Decisions are recorded in full in [ADRs
 | 22:49 | Asked whether everything was in the repo, and whether API limits would run out | Gaps filled; quota priorities and noon PKT reset (R-PROC-9/10) (`62a1933`) |
 | 23:14 | Shared the real limits from AI Studio | Per-model limits recorded; Flash fallback chain; Gemma 4; search grounding; Live Transcribe candidate (`493bff2`) |
 | 23:19 | Will use a separate Google Cloud project for the app; asked to log everything and plan the next stages | This log, the ADRs, engineering conventions, roadmap and the Milestone 1 implementation plan |
+| 23:37 | Asked to test the API to decide what goes into the app | Spikes S1 and S2 run, plus search, notes, flashcards and grading checks. Transcribe Live rejected; Gemini 3 Flash is a real fallback; 3.1 Flash-Lite strong but loops on some audio; notes and cards move to Flash-Lite → ADR-0015 |
 
 ### Requirements captured
 
@@ -56,5 +57,5 @@ A dated record of what was done and why. Decisions are recorded in full in [ADRs
 ### Open items at end of session
 
 - License: not chosen yet (all rights reserved by default)
-- Spikes before Milestone 4 (processing): S1–S5 in the [roadmap](roadmap.md)
+- Spikes before Milestone 4 (processing): S1 and S2 done; S3–S5 open in the [roadmap](roadmap.md)
 - A new Google Cloud project dedicated to the Notes App (being done by the student)

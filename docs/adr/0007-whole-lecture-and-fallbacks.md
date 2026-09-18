@@ -1,6 +1,6 @@
 # ADR-0007: Whole-lecture drafts on Gemini 3.5 Flash, with a model fallback chain
 
-- **Status:** Accepted
+- **Status:** Accepted. Fallback chain superseded by [ADR-0015](0015-model-roles-after-api-tests.md)
 - **Date:** 2026-09-18
 
 ## Context

@@ -71,9 +71,9 @@ This repo and app ship with **no API keys**. Everyone who uses the code adds the
 | Recorder | Custom Kotlin module: a foreground service that saves audio in chunks |
 | Local data | SQLite on Android, IndexedDB in the browser |
 | Sync and storage | Google Drive API |
-| Transcription + AI | Google Gemini API (free tier): Flash drafts whole lectures, Flash-Lite double-checks doubtful parts |
+| Transcription + AI | Google Gemini API (free tier): Flash transcribes whole lectures; Flash-Lite double-checks doubtful parts and writes notes and flashcards; Gemma 4 as backup |
 | Backup speech-to-text | Groq Whisper (free tier) |
-| Web search | Tavily (free tier) + Wikipedia |
+| Web search | Google Search through Gemini, Tavily (free tier), Wikipedia |
 | Flashcards | [ts-fsrs](https://github.com/open-spaced-repetition/ts-fsrs) |
 | Web hosting | GitHub Pages |
 

@@ -10,7 +10,7 @@ Each record captures one significant decision: the context, what was decided, it
 | [0004](0004-zero-budget-byok.md) | $0 budget: free tiers only, bring your own keys | Accepted |
 | [0005](0005-gemini-listens-directly.md) | Transcribe with Gemini listening to the audio, not Whisper | Accepted |
 | [0006](0006-website-style-transcripts.md) | Website-style transcripts: Roman Urdu original, English, speaker turns, context | Accepted |
-| [0007](0007-whole-lecture-and-fallbacks.md) | Whole-lecture drafts on Gemini 3.5 Flash, with a model fallback chain | Accepted |
+| [0007](0007-whole-lecture-and-fallbacks.md) | Whole-lecture drafts on Gemini 3.5 Flash, with a model fallback chain | Accepted; chain superseded by 0015 |
 | [0008](0008-caution-loop.md) | Caution loop: find doubtful parts, re-listen to short clips, learn from corrections | Accepted |
 | [0009](0009-numbering-follows-timetable.md) | Lecture numbers follow the timetable | Accepted |
 | [0010](0010-manual-recording-start.md) | Recording starts manually; everything after that is automatic | Accepted |
@@ -18,6 +18,7 @@ Each record captures one significant decision: the context, what was decided, it
 | [0012](0012-study-chat.md) | One study chat per subject: lectures first, then the web | Accepted |
 | [0013](0013-class-share-folder.md) | Classmates get study material through a shared Drive folder | Accepted |
 | [0014](0014-private-data-out-of-repo.md) | Personal data stays out of the public repo | Accepted |
+| [0015](0015-model-roles-after-api-tests.md) | Model roles after the API tests | Accepted |
 
 ## Template
 

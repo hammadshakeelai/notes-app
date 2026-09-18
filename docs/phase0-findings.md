@@ -107,6 +107,42 @@ One phrase ("Paths in Linux") was still misheard. Items like that go to the stud
 
 Result: the checker question is settled. An independent Flash-Lite draft finds the doubtful parts, and Flash-Lite re-listens to short clips with context. Flash is only used for parts that still disagree (R-QA-3, R-QA-3b).
 
+## API tests to decide the app's models (spikes S1 and S2, plus feature checks)
+
+Run late on 2026-09-18 with the student's key. The same 10-minute call excerpt and the lecture clips as above were used; no new recordings were sent.
+
+**S1: Gemini 3.5 Transcribe Live: rejected.** Tested through the Live API (WebSocket), streaming the call excerpt at 4x and then 2x real time:
+
+| Speed | Final text pieces for 10 min | Gaps over 60 s | Scripts in the output |
+| --- | --- | --- | --- |
+| 4x | 13 | 3:00–7:06 missing | Urdu, Hindi (Devanagari) and Latin, mixed line by line |
+| 2x | 14 | 2:40–7:04, 7:04–8:10, 8:37–10:00 | 10 Urdu, 3 Devanagari, 2 Latin |
+
+It also got the names wrong. The student can't read Urdu or Devanagari script well, and half the speech had no final text. There is no daily cap, but it is not usable.
+
+**S2: fallback models,** same prompt, context and scoring as "Getting close to the Gemini website":
+
+| Model (free limit) | Call excerpt: words matching the website | Names + slips right (of 5) | Lecture clips |
+| --- | --- | --- | --- |
+| Gemini 3.5 Flash (20/day) | 85% | 5/5 | ML clip: clean, all checks passed (27 s) |
+| Gemini 3 Flash, preview (20/day) | 85% | 5/5 | Overloaded (503) on the lecture test |
+| Gemini 3.1 Flash-Lite (500/day) | **87%** | 4/5 | PAI clip: "paths", ".bashrc", "ls -a" all right, all checks passed. **ML clip: repetition loop until the output limit**, at temperature 0 and at 0.5 |
+| Gemini 3.5 Flash-Lite (500/day) | 80% | 2/5 | — |
+| Gemini 2.5 Flash (20/day) | failed: 4 lines for 10 minutes | 0/5 | — |
+
+A proportional output cap (16,000 tokens for 10 minutes) made the looping model fail after 47 s instead of 152 s.
+
+**Feature checks:**
+
+| Feature | Result |
+| --- | --- |
+| Google Search grounding (Gemini 2.5 Flash) | Grounded answer in 6 s with 8 web sources |
+| Tavily search | 3 relevant results in 2.7 s |
+| Wikipedia summary API (no key) | 0.8 s |
+| Notes + 8 flashcards from a transcript, Gemini 3.5 Flash-Lite with a strict schema | 5 s. All 8 cards linked to real transcript times; 3 well-formed cloze cards; 3 "why/how" cards |
+| Same with Gemma 4 31B, strict schema | 42 s. Same validity; better choice of hidden words in cloze cards |
+| Gemma 4 31B without a schema (cards, grading) | Unusable: rambling text instead of JSON |
+
 ## Free-tier observations
 
 - **Groq:** 2,000 requests a day reported in the response headers. Audio-second limits are not in the headers.

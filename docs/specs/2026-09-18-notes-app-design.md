@@ -77,7 +77,7 @@ The student's consumer subscriptions (Google AI Pro, Claude Pro, ChatGPT Plus) d
   - **Roman Urdu** (Latin letters) for Urdu and Pashto, never Urdu script, with English words kept as spoken
   - one segment per speaker turn, keeping short replies ("Jee jee", "Achha")
   - speakers labelled **Teacher** / **Student**, or by name when known
-  Fallbacks, in order: the same model on 30-minute pieces, then Gemini Flash-Lite, then Groq Whisper.
+  Fallbacks, in order (ADR-0015): Gemini 3 Flash, then 30-minute pieces, then Gemini 3.1 Flash-Lite, then 3.5 Flash-Lite, then Groq Whisper.
 - **R-PROC-8 Context.** Every drafting and checking request includes:
   - subject, stream, teacher's name and date
   - a per-subject **glossary**: names and technical terms from earlier lectures' notes, terms you add, and your past corrections (R-QA-11)
@@ -220,14 +220,14 @@ Notes on platform choices:
 
 | Task | Primary | Fallback |
 | --- | --- | --- |
-| Transcription + English, listening to the audio | Gemini 3.5 Flash, whole lecture, with context (or Gemini 3.5 Transcribe Live if it passes its test) | Gemini 3 Flash → 2.5 Flash → 30-minute pieces → Gemini 3.5 Flash-Lite → Groq `whisper-large-v3` (translate) |
-| Second draft + re-listening to short doubtful clips | Gemini 3.5 Flash-Lite | Gemini 3.5 Flash for parts that still disagree |
-| Targeted re-translation of one segment | Gemini Flash | Gemini Flash-Lite |
-| Summary + notes (reads photos) | Gemini Flash | Gemini Flash-Lite |
-| Flashcards + practice questions | Gemini Flash | Gemini Flash-Lite |
-| Grading "explain it" answers | Gemini Flash-Lite | Gemma 4 |
-| Study chat | Gemini Flash-Lite | Gemma 4 |
-| Web search | Tavily, and Google Search grounding on Gemini 2.5 | Wikipedia API |
+| Transcription + English, listening to the audio | Gemini 3.5 Flash, whole lecture, with context | Gemini 3 Flash → 30-minute pieces → Gemini 3.1 Flash-Lite → 3.5 Flash-Lite → Groq `whisper-large-v3` (translate) |
+| Second draft + re-listening to short doubtful clips | Gemini 3.1 Flash-Lite | Gemini 3.5 Flash-Lite; Gemini 3.5 Flash for parts that still disagree |
+| Targeted re-translation of one segment | Gemini 3.5 Flash-Lite | Gemini 3.5 Flash |
+| Summary + notes (reads photos) | Gemini 3.5 Flash-Lite, strict schema | Gemma 4 31B, strict schema |
+| Flashcards + practice questions | Gemini 3.5 Flash-Lite, strict schema | Gemma 4 31B, strict schema |
+| Grading "explain it" answers | Gemini 3.5 Flash-Lite, strict schema | Gemma 4 31B, strict schema |
+| Study chat | Gemini 3.5 Flash-Lite | Gemma 4 31B |
+| Web search | Google Search grounding (Gemini 2.5 Flash) | Tavily → Wikipedia API |
 
 Chosen from the Phase 0 test ([findings](../phase0-findings.md)). Model names are configuration, not code.
 
@@ -235,12 +235,12 @@ Chosen from the Phase 0 test ([findings](../phase0-findings.md)). Model names ar
 
 | Service | Free limit | Used for |
 | --- | --- | --- |
-| Gemini 3.5 Flash | 5/min, 250K tokens/min, 20/day | Main drafts, notes, cards: about 3–4 per lecture, at most 16 on Thursday |
-| Gemini 3 Flash, 2.5 Flash (also 3.6, 3.7, 3.8 Flash) | 5/min, 250K tokens/min, 20/day each | Fallbacks when 3.5 Flash is used up or overloaded (quality tested in Phase 2) |
-| Gemini 3.5 Flash-Lite, 3.1 Flash-Lite | 15/min, 250K tokens/min, 500/day each | Second drafts, re-listening to short clips, chat |
-| Gemma 4 26B / 31B | 30/min, 16K tokens/min, 14,400/day each | Small text-only jobs: grading answers, simple chat replies, sense checks |
-| Google Search grounding (Gemini 2.5 models) | 1,500/day, within those models' 20 requests/day | Web search in the study chat, alongside Tavily |
-| Gemini 3.5 Transcribe Live, 3.5 Live Translate (Live API) | 20K tokens/min, no daily cap shown | **Candidate** for unlimited transcription (~13 min of audio per minute). Tested before Phase 2 |
+| Gemini 3.5 Flash | 5/min, 250K tokens/min, 20/day | Drafts and escalations only: about 1–2 per lecture, 4–8 on Thursday |
+| Gemini 3 Flash (preview) | 5/min, 250K tokens/min, 20/day | First fallback for drafts (as good as 3.5 Flash in testing; sometimes overloaded). Gemini 2.5 Flash failed at transcription and is not used for it |
+| Gemini 3.1 Flash-Lite, 3.5 Flash-Lite | 15/min, 250K tokens/min, 500/day each | 3.1: second drafts and re-listening. 3.5: notes, cards, grading, chat |
+| Gemma 4 26B / 31B | 30/min, 16K tokens/min, 14,400/day each | Fallback for notes, cards, grading and chat (always with a schema; ~40 s per job) |
+| Google Search grounding (Gemini 2.5 models) | 1,500/day, within those models' 20 requests/day | First choice for web search in the study chat |
+| Gemini 3.5 Transcribe Live (Live API) | 20K tokens/min, no daily cap shown | **Not used**: dropped half the speech and mixed scripts in testing (ADR-0015) |
 | Groq Whisper | 8 h audio/day, 2,000 requests/day | Last-resort fallback |
 | Tavily | 1,000 searches/month | Web search in the study chat |
 | Wikipedia | No key, fair use | Fallback |
@@ -251,10 +251,11 @@ Notes:
 - **Keep the project for this app only.** Every tool using a key from the same project shares these limits. In testing, other usage in the project had already used 3.7 Flash to 21/20.
 - Using several *models* is how the limits are designed. Spreading one app across several *projects* is not (see Non-goals).
 
-**Overload matters more than the daily limit.** Whole-lecture requests keep Flash use inside the free limit (16 a day at most). But during testing Gemini 3.6, 3.7 and 3.8 Flash were all overloaded (HTTP 503), and 3.5 Flash was for a while too. The queue retries with growing pauses, so a lecture may finish hours later on a busy day. Real limits: https://ai.dev/rate-limit.
+**Overload matters more than the daily limit.** Flash is only used for drafts and escalations (about 4–8 a day at most), well inside its free limit. But during testing Gemini 3.6, 3.7 and 3.8 Flash were all overloaded (HTTP 503), and 3.5 Flash was for a while too. The queue retries with growing pauses, so a lecture may finish hours later on a busy day. Real limits: https://ai.dev/rate-limit.
 
 - **R-PROC-9 Running short.** Google resets Gemini's daily limits at midnight Pacific time, which is noon in Pakistan. When a limit is close, work runs in this order: (1) drafting new lectures, (2) re-listening to doubtful parts, (3) notes, (4) flashcards and practice questions, (5) study chat. Nothing is dropped: lower-priority work waits for the next reset.
 - **R-PROC-10 Usage screen.** Settings shows each service's use today against its limit, and when it resets.
+- **R-PROC-11 Safe model calls.** Every model call uses a strict response schema. Audio calls cap output at about 1,600 tokens per minute of audio, so a repetition loop fails fast and the next model in the chain takes over. An overloaded model (HTTP 503) is retried with growing pauses before falling back (ADR-0015).
 
 The router records usage per provider per day. When a limit is hit, it moves to the fallback. When the fallbacks are also used up, the job waits until the next day's reset.
 
