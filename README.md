@@ -31,7 +31,7 @@ Lectures here mix English, Urdu and Pashto, often in noisy rooms, and I read Eng
 ### Desktop
 - A web app, free on GitHub Pages. Sign in with Google to browse, play, edit, study and chat from any computer.
 - Everything syncs both ways through my own Google Drive
-- Export transcripts and notes (Markdown, text or PDF) to share with classmates, or share them straight from Google Drive
+- An auto-updated **Class share** folder in Drive for classmates: notes, transcripts, revision sheets and practice questions as Google Docs, plus flashcards for Anki or Quizlet. Never audio.
 
 ## How it works
 

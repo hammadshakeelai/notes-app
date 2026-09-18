@@ -12,7 +12,7 @@ A personal study app for one university student. The Android phone records every
 
 | Item | Decision |
 | --- | --- |
-| Users | One person. No accounts, no app store, no other users. Classmates only receive exported transcripts (R-WEB-3/4) |
+| Users | One person. No accounts, no app store, no other users. Classmates get the study material (never audio) through a shared Drive folder (4.8) |
 | Phone | Samsung Galaxy S23 Ultra (Android). No iOS |
 | Desktop | Any browser, via a web app |
 | Lectures | English, Urdu and Pashto mixed within sentences, noisy rooms |
@@ -108,12 +108,18 @@ Based on the research summary in Section 9.
 - **R-SYNC-3** Clashes are resolved per item: the latest edit wins. Deletes sync as markers ("tombstones").
 - **R-WEB-1** The web app is hosted free on GitHub Pages, signs in with Google, and reads and writes the same Drive data.
 - **R-WEB-2** The web app can do everything except record: browse, play, read, search, edit notes and the timetable, mark holidays and cancellations, study flashcards, practise, chat, upload audio.
-- **R-WEB-3** Sharing transcripts with classmates (they don't use the app):
-  - **Export** for one lecture or a whole subject: English transcript, original transcript, or both, plus notes if wanted.
-  - Formats: Markdown or plain text (a zip for a whole subject), or a print-friendly page for saving as PDF.
-- **R-WEB-4** Alongside the JSON data, processing also writes a readable transcript file, `notes/<Subject>/<date title> – transcript.md`, to Drive. You can share a file or a whole subject folder with classmates using Google Drive's own **Share** button.
 
-### 4.8 Setup and settings
+### 4.8 Sharing with classmates
+Classmates don't use the app. They get the study material, never the audio, through a Google Drive folder they open in a desktop browser.
+- **R-SHARE-1** The app keeps a **Class share** folder in Drive, updated automatically when a lecture finishes processing and whenever notes are edited.
+- **R-SHARE-2** Contents, per subject:
+  - per lecture: **Notes** (Google Doc: summary, key concepts, notes, board/slide photos) and **Transcript** (Google Doc: English, with the original under each part)
+  - per subject: **Revision sheet** and **Practice questions** (Google Docs), and **Flashcards.csv** (imports into Anki or Quizlet)
+- **R-SHARE-3** Never shared: audio, chat history, bookmarks, flashcard progress, API keys.
+- **R-SHARE-4** Sharing can be switched on or off per subject (for example if a lecturer does not allow it). Switching off stops updates and removes that subject from the folder.
+- **R-SHARE-5** You share the folder yourself, once, with Drive's own **Share** button (by email or link). The app has an **Open Class share in Drive** button and never changes who has access.
+
+### 4.9 Setup and settings
 - **R-SET-1** First run, in order:
   1. Google sign-in (Drive)
   2. Enter the free API keys (Groq, Gemini, Tavily), with links showing how to get each
@@ -221,9 +227,9 @@ NotesApp/
 │  ├─ practice/<id>.json         questions per recording/subject
 │  └─ chats/<subjectId>/<id>.json  messages with sources
 ├─ notes/<Subject>/<date title>.md    notes and revision sheets
-├─ notes/<Subject>/<date title> – transcript.md   readable transcript, for sharing
 ├─ audio/<recId>.m4a
-└─ photos/<recId>/<photoId>.jpg
+├─ photos/<recId>/<photoId>.jpg
+└─ Class share/<Subject>/          shared with classmates: Google Docs + Flashcards.csv, no audio
 ```
 
 Every JSON item has `id`, `updatedAt`, `updatedBy` (device) and `deleted`. Using the ISO date in file names keeps Drive browsable by hand.
