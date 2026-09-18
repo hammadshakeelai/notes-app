@@ -47,6 +47,19 @@ flowchart LR
 
 There's no server of my own. API keys are entered once on each device and stored only there, never in this repo.
 
+## Bring your own API keys
+
+This repo and app ship with **no API keys**. Everyone who uses the code adds their own free keys locally:
+
+| Service | Used for | Get a free key |
+| --- | --- | --- |
+| Groq | Speech-to-text (Whisper) | https://console.groq.com/keys |
+| Google Gemini | Notes, flashcards, study chat | https://aistudio.google.com/apikey |
+| Tavily | Web search in the study chat | https://app.tavily.com |
+
+- **In the app:** paste them into Settings on each device (phone and browser). They're stored only on that device and sent only to their own provider.
+- **For development scripts:** copy [`.env.example`](.env.example) to `.env` and fill it in. `.env` is git-ignored, so never commit it.
+
 ## Tech stack
 
 | Layer | Choice |

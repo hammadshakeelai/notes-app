@@ -119,6 +119,7 @@ Based on the research summary in Section 9.
   6. Mark past holidays and cancellations
 - **R-SET-2** Samsung steps: set the app's battery usage to **Unrestricted** and add it to **Never sleeping apps**. The app checks these where Android allows and reminds you if they are off.
 - **R-SET-3** API keys are stored only on the device: Android Keystore via `expo-secure-store` on the phone, browser storage on the web. They are never written to Drive, and never to the repo, which is public.
+- **R-SET-4** Bring your own keys: the app and repo ship with **no** API keys. Everyone who uses the code creates their own free keys (Groq, Gemini, Tavily) and adds them locally: in the app's Settings on each device, or in a git-ignored `.env` for development scripts (template: `.env.example`). Keys are only ever sent to their own provider. Settings has a **Test key** button and links to each provider's key page.
 
 ## 5. Non-functional requirements
 
