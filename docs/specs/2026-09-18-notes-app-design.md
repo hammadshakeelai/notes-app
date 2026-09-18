@@ -91,10 +91,10 @@ Every transcript, and everything generated from it, is checked and repaired befo
 - **R-QA-2** A draft that fails the automatic checks is redrafted: once more with the same model, then with a stronger one.
 - **R-QA-3 Independent check.** A stronger model (Gemini Flash) listens to the audio again and lists what is missing, wrong, invented or untranslated, with corrections. The checker is never the model that wrote the draft: in Phase 0, a model checking its own kind of output found nothing, even in transcripts known to be bad.
 - **R-QA-4 Check the checker.** A correction is applied only if it passes the automatic checks itself (Phase 0 saw the checker write Roman Urdu into the English).
-- **R-QA-5** At most 2 check rounds per piece. The loop stops early when the automatic checks pass and the checker finds 3 or fewer problems.
+- **R-QA-5** One check round per piece. A second round runs only if the automatic checks still fail after round 1 and after targeted repair (R-QA-6), for example when a stretch of speech is still missing. Never more than 2. In Phase 0, round 2 applied 43 more corrections that changed no automatic check, so it is not worth the free-tier cost by default.
 - **R-QA-6 Targeted repair.** Any segment still failing after the rounds is re-translated on its own.
 - **R-QA-7 Needs your check.** Anything that still cannot be fixed is marked `[unclear]` and listed on the lecture with a play button. You can correct it on the phone or the desktop.
-- **R-QA-8 Generated content is checked too.** The checker compares notes, flashcards and practice questions with the final transcript. Every claim must come from the lecture, and every flashcard's answer must match the moment it cites. Unsupported items are fixed or removed.
+- **R-QA-8 Generated content is checked too** (text only, no audio, so it runs on Flash-Lite; whether Flash-Lite is strict enough for this is tested in Phase 2, with Flash as the fallback). The checker compares notes, flashcards and practice questions with the final transcript. Every claim must come from the lecture, and every flashcard's answer must match the moment it cites. Unsupported items are fixed or removed.
 - **R-QA-9 Quality badge** on every lecture, e.g. *"✓ Checked: 3 pieces, 2 rounds, 57 fixes, nothing needs your check"* or *"⚠ 2 parts need your check"*.
 
 ### 4.4 Notes
@@ -219,13 +219,13 @@ Chosen from the Phase 0 test ([findings](../phase0-findings.md)). Model names ar
 | Service | Reported free limit | Expected use |
 | --- | --- | --- |
 | Groq Whisper | 8 h audio/day, 2 h/hour, 25 MB/file, 2,000 requests/day | Last-resort fallback only |
-| Gemini Flash | ~20 requests/day per model version | Checks, notes and cards: about 6–10 per lecture, about 100–160 a week (a single version allows ~140) |
+| Gemini Flash | ~20 requests/day per model version | 1 check per 30-minute piece + notes and cards (2 per lecture): about 84 a week, 22 on Thursday (7 h = 14 pieces). A single version allows about 140 a week |
 | Gemini Flash-Lite | ~500 requests/day | Drafts (about 3 per lecture), chat, grading |
 | Tavily | 1,000 searches/month | ~33/day |
 | Wikipedia | No key, fair use | Fallback |
 | Google Drive | 15 GB | ~6 GB/semester |
 
-**Gemini Flash is the tight spot.** Three things keep it inside the free tier: 30-minute pieces, catching up on Friday to Sunday (no classes), and spreading work across Gemini Flash versions, which reportedly have separate free limits. The real limits are read from AI Studio before Phase 2.
+**Gemini Flash is the tight spot.** Weekly demand (~84) fits a single version's free limit (~140), but Monday to Thursday need about 21 a day against 20, so Thursday's lectures may finish processing a day or two later. The queue catches up on Friday to Sunday (no classes). If Gemini Flash versions have separate free limits, as reported but not yet verified, spreading work across them removes the delay. The real limits are read from AI Studio before Phase 2.
 
 The router records usage per provider per day. When a limit is hit, it moves to the fallback. When the fallbacks are also used up, the job waits until the next day's reset.
 

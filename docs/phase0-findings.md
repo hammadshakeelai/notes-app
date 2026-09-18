@@ -59,7 +59,7 @@ Takeaways, now requirements R-QA-1 to R-QA-9 in the design document:
 - Automatic checks catch loops, gaps, empty segments, Urdu script and Roman Urdu in English.
 - The checker must be a different, stronger model.
 - The checker's own corrections must pass the automatic checks before they are applied.
-- Returns fall off after round 1, so the loop is capped at 2 rounds.
+- Round 1 did the real work. Round 2's 43 applied corrections changed no automatic check (untranslated segments stayed at 1/63), so it is either rewording or improvement the checks can't see. Round 2 now runs only when the automatic checks still fail.
 - A segment still failing after the rounds gets a targeted repair. Anything left is shown to the student instead of being guessed.
 
 ## Free-tier observations
