@@ -19,6 +19,7 @@ Each record captures one significant decision: the context, what was decided, it
 | [0013](0013-class-share-folder.md) | Classmates get study material through a shared Drive folder | Accepted |
 | [0014](0014-private-data-out-of-repo.md) | Personal data stays out of the public repo | Accepted |
 | [0015](0015-model-roles-after-api-tests.md) | Model roles after the API tests | Accepted |
+| [0016](0016-durable-recorder-chunks.md) | Continuous AAC capture with recoverable chunks | Accepted; device validation pending |
 
 ## Template
 
