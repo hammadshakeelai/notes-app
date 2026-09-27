@@ -1,0 +1,73 @@
+name: Client checks
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: client-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  client:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: client
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: client/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm run test:ci
+      - run: npm run export:web
+        env:
+          CI: '1'
+          EXPO_NO_TELEMETRY: '1'
+      - run: npx expo export --platform android --output-dir .expo/android-export
+        env:
+          CI: '1'
+          EXPO_NO_TELEMETRY: '1'
+
+  android-recorder:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: client
+    env:
+      CI: '1'
+      EXPO_NO_TELEMETRY: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: client/package-lock.json
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+      - run: npm ci
+      - run: npx expo prebuild --platform android --no-install
+      - name: Compile recorder and run native unit tests
+        working-directory: client/android
+        run: bash ./gradlew :notes-recorder:compileDebugKotlin :notes-recorder:testDebugUnitTest --no-daemon --stacktrace -PreactNativeArchitectures=arm64-v8a
+      - name: Save native test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: recorder-test-reports
+          path: client/modules/recorder/android/build/reports/tests/
+          if-no-files-found: ignore
