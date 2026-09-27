@@ -7,7 +7,8 @@ How this project is built. Short on purpose: when a rule stops helping, change i
 ```
 notes-app/
 ├─ client/                Expo app (Android + web), created in Milestone 1
-│  ├─ app/                screens (Expo Router)
+│  ├─ src/app/            thin screen routes (Expo Router)
+│  ├─ src/features/       screen components and device/UI state
 │  ├─ src/domain/         pure TypeScript logic: timetable, numbering, checks (no React, no I/O)
 │  ├─ src/data/           storage and sync adapters
 │  └─ modules/recorder/   custom Kotlin recorder module (Milestone 2)
@@ -50,6 +51,7 @@ notes-app/
 | Level | What | Where | When |
 | --- | --- | --- | --- |
 | Unit | Pure domain logic: timetable, numbering, naming, caution-loop checks, sync merge rules, FSRS wrapper | `client/src/**/__tests__` (Jest) | Every commit, CI |
+| Native unit | Audio frame validation, chunk rotation, encoder shutdown ownership, recording journal/recovery failures | `client/modules/recorder/android/src/test` (JUnit) | Native changes, CI |
 | Integration | Processing queue and sync engine against fake providers and a fake Drive | `client/src/**/__tests__` | Every commit, CI |
 | Device | Recorder behaviour on the S23 Ultra: screen off, swipe-away, call, reboot, battery drain | Checklist in the Milestone 2 plan | Before each release tag |
 | Spike | Model quality and free limits on real lectures | Scripts in `tools/spikes/`, data in `private/`, results in `docs/` | Before the milestone that depends on it |
@@ -81,4 +83,8 @@ Test data built from real lectures stays in `private/`. Committed fixtures are s
 
 ## CI
 
-GitHub Actions, added in Milestone 1 Task 1: on every push and pull request, `npm ci`, type check, lint and Jest, run in `client/`.
+GitHub Actions: on every push and pull request, `npm ci`, type check, lint, Jest with coverage, and web/Android JavaScript exports run in `client/`. CI uses Node 24 and the committed npm lockfile. Domain coverage must remain at least 90% for statements, branches, functions and lines.
+
+A separate Java 17 Android job prebuilds the generated application, compiles `:notes-recorder` and runs its JVM tests. Test reports are retained as CI artifacts. These checks do not open a microphone or replace the physical-device release checklist.
+
+`npm run check` runs the local code checks. ESLint prevents React/Expo, common I/O imports, implicit clock reads and fetch calls in the domain. Dates and times belong at the UI boundary and are passed into domain functions. A JavaScript export does not replace an Android build or real-device recorder testing.
