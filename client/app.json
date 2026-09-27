@@ -1,0 +1,37 @@
+{
+  "expo": {
+    "name": "Notes",
+    "slug": "notes-app",
+    "version": "0.1.0",
+    "scheme": "notesapp",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#F7F8FC",
+    "platforms": [
+      "android",
+      "web"
+    ],
+    "android": {
+      "package": "com.notesapp.study",
+      "allowBackup": false
+    },
+    "web": {
+      "output": "static",
+      "name": "Notes — Your study companion"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-dev-client",
+      "expo-sqlite",
+      "expo-secure-store",
+      "expo-audio",
+      "expo-image-picker",
+      "./plugins/withShortNativePaths",
+      "expo-web-browser",
+      "expo-notifications"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
