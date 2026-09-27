@@ -1,6 +1,6 @@
 # Roadmap
 
-Milestones in build order. Each one ends with something usable, a release tag, and exit criteria that are checked before the next one starts. Detailed, test-first implementation plans are written for one milestone at a time, just before it starts, in `docs/superpowers/plans/`.
+Milestones in build order. Each one ends with something usable, a release tag, and checked exit criteria. Detailed implementation plans are written in `docs/superpowers/plans/`. The user authorized continuing local M2 implementation after reviewing M1; M1's hosted CI, merge and tag remain outstanding release work.
 
 Requirement IDs refer to the [design](specs/2026-09-18-notes-app-design.md). Decisions are in the [ADRs](adr/README.md).
 
@@ -22,8 +22,8 @@ M0 Inception + Phase 0 ✅
 | Milestone | Goal | Size | Tag | Plan | Status |
 | --- | --- | --- | --- | --- | --- |
 | M0 | Requirements, design, transcription test | — | — | — | ✅ Done 2026-09-18 |
-| M1 | Timetable, naming and numbering logic, tested, with CI | S | `v0.1.0` | [plan](superpowers/plans/2026-09-18-m1-domain-core.md) | Ready |
-| M2 | Android recorder that can't lose a lecture | L | `v0.2.0` | Written when M1 is done | Not started |
+| M1 | Timetable, naming and numbering logic, tested, with CI | S | `v0.1.0` | [plan](superpowers/plans/2026-09-18-m1-domain-core.md) | Implemented locally; hosted CI, merge and tag pending |
+| M2 | Android recorder that can't lose a lecture | L | `v0.2.0` | [plan](superpowers/plans/2026-09-20-m2-recorder.md) | Implementation and validation in progress; physical-device checklist pending |
 | M3 | Android app you can use in class every day (no AI yet) | M | `v0.3.0` | Written when M2 is done | Not started |
 | S1–S5 | Spikes that settle the unknowns before M4 | S | — | Below | S1, S2 done; S3–S5 open |
 | M4 | Every lecture becomes a checked transcript and notes | L | `v0.4.0` | Written after the spikes | Not started |
