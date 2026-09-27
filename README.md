@@ -2,13 +2,35 @@
 
 A personal study app for university. My Android phone records every class, names and files each recording from my timetable, and turns it into English transcripts, notes, flashcards and practice questions. A study chat can search my lectures and the web. Everything syncs through Google Drive, and a web app gives me full access from any computer. It runs entirely on free services.
 
-> **Status:** design approved, transcription tested (Phase 0). Next: **Milestone 1**, the timetable logic ([plan](docs/superpowers/plans/2026-09-18-m1-domain-core.md)). No app code yet.
+> **Status:** Active implementation, not a final release. Local storage, timetable editing, the audio library, notes, FSRS reviews, processing, cited chat and manual Drive sync/sharing are implemented. Native recorder compilation and 33 native tests pass. Android packaging, physical-device reliability and live provider/OAuth verification remain release gates. See the [current delivery status](docs/delivery-status.md).
+
+## Run the app
+
+Requires Node.js 24 and npm 11. No API keys or Google account are needed for the timetable preview.
+
+```bash
+cd client
+npm ci
+npm run web
+```
+
+Browse the week, edit the timetable, import audio, listen, write notes and review cards. The browser uses IndexedDB; Android uses SQLite and private media files. Recording requires the Android development build. Configure provider keys locally in Settings; processing starts only after it is enabled. Google client IDs can be added later.
+
+```bash
+npm run check       # strict types, lint, and Jest with coverage
+npm run export:web  # static browser build
+npm run android    # build/install the Android development app (requires SDK/JDK)
+```
+
+See [client setup](client/README.md) for the project boundaries and [Android development](docs/android-development.md) for native build commands. Opening the recorder never starts the microphone; recording begins only after tapping Start and granting permissions.
 
 ## The problem
 
 Lectures here mix English, Urdu and Pashto, often in noisy rooms, and I read English best. In class it's hard to listen, write and understand at once, and recordings I never go back to don't help. This app keeps each lecture's audio, board photos, transcript and notes together, in English, and turns them into revision material automatically.
 
-## Features
+## Approved product scope
+
+The list below describes the target product. Consult [delivery status](docs/delivery-status.md) for implemented behavior and remaining work; these are not all release-certified features yet.
 
 ### Recording (Android)
 - One tap to record. The app already knows which class it is from the timetable.
@@ -82,8 +104,8 @@ This repo and app ship with **no API keys**. Everyone who uses the code adds the
 | Milestone | What you get | Status |
 | --- | --- | --- |
 | M0 | Requirements, design, transcription test | ✅ Done |
-| M1 | Timetable logic: class detection, numbering, naming (tested, with CI) | Ready to build |
-| M2 | Android recorder that can't lose a lecture | Planned |
+| M1 | Timetable logic: class detection, numbering, naming (tested, with CI) | Implemented locally; release pending |
+| M2 | Android recorder that can't lose a lecture | Implementation and validation in progress |
 | M3 | Android app used in class every day (no AI yet) | Planned |
 | M4 | Every lecture becomes a checked transcript and notes | Planned |
 | M5 | Everything on the desktop; classmates' shared folder | Planned |
@@ -100,6 +122,8 @@ Details, exit criteria and requirement traceability: [docs/roadmap.md](docs/road
 | [Decisions (ADRs)](docs/adr/README.md) | Why each major choice was made, and what was rejected |
 | [Roadmap](docs/roadmap.md) | Milestones, spikes, traceability, risk register |
 | [M1 plan](docs/superpowers/plans/2026-09-18-m1-domain-core.md) | Step-by-step, test-first build plan for the next milestone |
+| [M2 plan](docs/superpowers/plans/2026-09-20-m2-recorder.md) | Recorder architecture, implementation and release gates |
+| [Android development](docs/android-development.md) | Native build setup and S23 Ultra reliability checklist |
 | [Engineering conventions](docs/engineering.md) | Branches, commits, Definition of Done, tests, privacy checks |
 | [Phase 0 findings](docs/phase0-findings.md) | Transcription test results on real lectures |
 | [Project log](docs/project-log.md) | Dated record of what happened and why |
