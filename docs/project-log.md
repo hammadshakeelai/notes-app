@@ -65,3 +65,19 @@ A dated record of what was done and why. Decisions are recorded in full in [ADRs
 | Time | What happened | Outcome |
 | --- | --- | --- |
 | 00:03 | Asked to write everything into the repo | Test scripts moved from `private/` to `tools/spikes/` (data stays private); `verify_plan.py` added. The M1 plan was re-verified from its committed text: 19 files, 45 tests pass |
+
+## 2026-09-19–20: M1 foundation implementation
+
+Implemented the Expo client and all M1 timetable domain functions on `codex/m1-foundation`. Expanded the original plan's 45 tests to 82 regression tests; all pass in Jest with 98.24% domain line coverage. Added strict type checking, domain lint boundaries, a committed lockfile and GitHub Actions. Type checking, lint, Expo dependency compatibility and static web export pass. A desktop/mobile browser smoke check verified the timetable preview and caught a hydration mismatch that was corrected.
+
+The preview browses the public schedule and shows computed lecture/lab names. The private timetable was checked locally without copying teacher names or rooms into source. Added tests for duplicate make-ups, isolated seed objects, bad imports, overlaps and date/time boundaries. No recording, storage, AI or sync is claimed yet.
+
+The implementation is local; hosted CI, merge and the milestone tag remain pending. Known upstream dependency advisories and M2 handoff steps are recorded in [foundation status](foundation-status.md).
+
+## 2026-09-20–23: M2 recorder implementation
+
+Added the local Kotlin Expo module and a microphone foreground service in its own process. The capture engine writes continuous AAC into durable chunks; Stop validates and joins the audio before committing ready metadata and removing chunks. Atomic journals retain recording identity, bookmarks and interruption gaps. Recovery excludes live capture and never starts a microphone. [ADR-0016](adr/0016-durable-recorder-chunks.md) records these choices.
+
+Connected a recorder screen to the timetable's generated class names. It includes explicit permissions and preflight warnings, start/pause/resume, bookmarks, stop/save, sound level, saved recordings and recovery controls. Web and Expo Go explain that the native build is required. Fixed failed IPC binding cleanup, screen-focus polling, back navigation and the shutdown timeout case that could otherwise release files while an encoder still writes. Failed starts can remove a verified empty attempt; partial audio and unknown files are preserved.
+
+Type checking, lint, 95 JavaScript tests, Expo version compatibility, web export, Android Hermes export and desktop/mobile browser regression pass. Added native framing, rotation, storage-failure and shutdown-ownership tests plus an Android CI job. Public-file privacy checks pass. The Android SDK's exact Build Tools and NDK are installed; Gradle 9.3.1 was downloaded and checksum-verified. Native compile/test results and physical-device checks remain tracked in [Android development](android-development.md); no microphone recording or remote release was performed by these checks.
