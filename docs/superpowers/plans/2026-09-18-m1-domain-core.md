@@ -1,5 +1,7 @@
 # M1: Domain Core Implementation Plan
 
+> **Execution status (2026-09-20):** Tasks 1–8 are implemented locally, with 82 passing Jest tests and passing type/lint/web/Android export checks. Test-first failures were initially observed using the repository's Node shim while Jest was being installed. The implementation uses Expo SDK 57's `src/app/` layout. Task 9's hosted CI, merge and release tag are pending; no commits or remote changes were made in this implementation session. See [foundation status](../../foundation-status.md) for validation and deviations. The original steps and sample code below are retained as the planning record.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Create the Expo project with CI, and implement all timetable logic (class detection, numbering, naming, teacher changes, prompts, timetable import) as pure, fully tested TypeScript.
