@@ -1,8 +1,12 @@
+![Notes — Your study companion](docs/assets/notes-banner.svg)
+
 # Notes App
+
+[Download phone APK](https://github.com/hammadshakeelai/notes-app/releases/download/phone-test-2026-10-02/notes-phone-test.apk) · [Install & import recordings](docs/phone-testing.md) · [Completed & remaining work](docs/delivery-status.md)
 
 A personal study app for university. My Android phone records every class, names and files each recording from my timetable, and turns it into English transcripts, notes, flashcards and practice questions. A study chat can search my lectures and the web. Everything syncs through Google Drive, and a web app gives me full access from any computer. It runs entirely on free services.
 
-> **Status:** Active implementation, not a final release. Local storage, timetable editing, the audio library, notes, FSRS reviews, processing, cited chat and manual Drive sync/sharing are implemented. Native recorder compilation and 33 native tests pass. Android packaging, physical-device reliability and live provider/OAuth verification remain release gates. See the [current delivery status](docs/delivery-status.md).
+> **Status:** Phone-test APK available; active development. Local storage, timetable editing, the audio library, notes, FSRS reviews, processing, cited chat and manual Drive sync/sharing are implemented. Standalone APK build and emulator import/playback checks pass, with 119 JavaScript and 33 native tests. Physical-device reliability and live provider/OAuth verification remain release gates. See the [current delivery status](docs/delivery-status.md).
 
 ## Run the app
 

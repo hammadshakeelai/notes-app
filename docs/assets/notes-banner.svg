@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="400" viewBox="0 0 1280 400" role="img" aria-labelledby="title desc">
+  <title id="title">Notes — Your study companion</title>
+  <desc id="desc">A university study app for Android and web. Record, revisit and remember.</desc>
+  <defs>
+    <linearGradient id="bg" x2="1" y2="1"><stop stop-color="#F7F8FC"/><stop offset="1" stop-color="#ECE8FF"/></linearGradient>
+  </defs>
+  <rect width="1280" height="400" rx="24" fill="url(#bg)"/>
+  <circle cx="1170" cy="40" r="240" fill="#DFD8FF" opacity=".6"/>
+  <rect x="64" y="64" width="88" height="88" rx="25" fill="#6750D8"/>
+  <text x="83" y="129" fill="#fff" font-family="Arial, sans-serif" font-size="66" font-weight="700">n.</text>
+  <text x="178" y="128" fill="#252745" font-family="Arial, sans-serif" font-size="62" font-weight="700">Notes</text>
+  <text x="68" y="222" fill="#252745" font-family="Arial, sans-serif" font-size="42" font-weight="700">A little more prepared.</text>
+  <text x="68" y="270" fill="#626B85" font-family="Arial, sans-serif" font-size="25">Keep the lecture. Find the important part. Come back prepared.</text>
+  <text x="68" y="339" fill="#6750D8" font-family="Arial, sans-serif" font-size="19" font-weight="700" letter-spacing="2">ANDROID + WEB · RECORD · REVISIT · REMEMBER</text>
+  <g transform="translate(968 114)">
+    <rect width="218" height="190" rx="26" fill="#fff" opacity=".88"/>
+    <g stroke="#6750D8" stroke-width="10" stroke-linecap="round">
+      <path d="M38 95v12M62 69v64M86 43v116M110 61v80M134 78v46M158 52v98M182 85v32"/>
+    </g>
+  </g>
+</svg>
