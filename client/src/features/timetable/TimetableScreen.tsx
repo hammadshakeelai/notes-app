@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.background },
   page: { paddingHorizontal: 20, paddingBottom: 40, width: '100%', maxWidth: 1240, alignSelf: 'center' },
   widePage: { paddingHorizontal: 48 },
-  header: { paddingVertical: 28, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderBottomWidth: 1, borderBottomColor: colors.line, gap: 12 },
+  header: { paddingVertical: 28, flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', borderBottomWidth: 1, borderBottomColor: colors.line, gap: 12 },
   brand: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   mark: { width: 36, height: 36, borderRadius: 11, backgroundColor: colors.accent, justifyContent: 'center', alignItems: 'center' },
   markText: { fontSize: 26, fontWeight: '700', color: 'white', marginTop: -4 },
