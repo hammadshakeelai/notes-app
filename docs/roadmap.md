@@ -1,6 +1,6 @@
 # Roadmap
 
-Milestones in build order. Each one ends with something usable, a release tag, and checked exit criteria. Detailed implementation plans are written in `docs/superpowers/plans/`. The user authorized continuing local M2 implementation after reviewing M1; M1's hosted CI, merge and tag remain outstanding release work.
+Milestones in build order. Each one ends with something usable, a release tag, and checked exit criteria. Detailed implementation plans are written in `docs/superpowers/plans/`. The user authorized continuing all implementation and pushing incremental commits. The [delivery report](delivery-status.md) is the current implementation/testing ledger; milestone tags still require their exit criteria.
 
 Requirement IDs refer to the [design](specs/2026-09-18-notes-app-design.md). Decisions are in the [ADRs](adr/README.md).
 
@@ -22,14 +22,14 @@ M0 Inception + Phase 0 ✅
 | Milestone | Goal | Size | Tag | Plan | Status |
 | --- | --- | --- | --- | --- | --- |
 | M0 | Requirements, design, transcription test | — | — | — | ✅ Done 2026-09-18 |
-| M1 | Timetable, naming and numbering logic, tested, with CI | S | `v0.1.0` | [plan](superpowers/plans/2026-09-18-m1-domain-core.md) | Implemented locally; hosted CI, merge and tag pending |
+| M1 | Timetable, naming and numbering logic, tested, with CI | S | `v0.1.0` | [plan](superpowers/plans/2026-09-18-m1-domain-core.md) | Implemented; branch CI passes; merge/tag pending |
 | M2 | Android recorder that can't lose a lecture | L | `v0.2.0` | [plan](superpowers/plans/2026-09-20-m2-recorder.md) | Implementation and validation in progress; physical-device checklist pending |
-| M3 | Android app you can use in class every day (no AI yet) | M | `v0.3.0` | Written when M2 is done | Not started |
+| M3 | Android app you can use in class every day (no AI yet) | M | `v0.3.0` | [completion ledger](superpowers/plans/2026-09-25-completion.md) | Library/storage/editor implemented; setup/notifications/device validation incomplete |
 | S1–S5 | Spikes that settle the unknowns before M4 | S | — | Below | S1, S2 done; S3–S5 open |
-| M4 | Every lecture becomes a checked transcript and notes | L | `v0.4.0` | Written after the spikes | Not started |
-| M5 | Everything on the desktop; classmates' shared folder | L | `v0.5.0` | — | Not started |
-| M6 | Flashcards, practice questions, exam mode, revision sheets | M | `v0.6.0` | — | Not started |
-| M7 | Study chat per subject with web search | M | `v0.7.0` | — | Not started |
+| M4 | Every lecture becomes a checked transcript and notes | L | `v0.4.0` | Completion ledger | Opt-in queue/drafts/notes/corrections implemented; full caution loop and fallbacks incomplete |
+| M5 | Everything on the desktop; classmates' shared folder | L | `v0.5.0` | Completion ledger | Manual sync/share implemented; OAuth IDs/live tests/background sync pending |
+| M6 | Flashcards, practice questions, exam mode, revision sheets | M | `v0.6.0` | Completion ledger | Manual cards and FSRS implemented; generated practice/revision incomplete |
+| M7 | Study chat per subject with web search | M | `v0.7.0` | Completion ledger | Cited lecture/web chat implemented; live-provider validation pending |
 
 Sizes: S = a few focused sessions, M = one to two weeks part-time, L = two to four weeks part-time.
 

@@ -1,4 +1,4 @@
-# Delivery status — September 27, 2026
+# Delivery status — October 2, 2026
 
 The app is in active development. Do not describe it as completely final or tag a release yet.
 The owner authorized committing and pushing incremental work to `codex/m1-foundation`.
@@ -24,9 +24,18 @@ The owner authorized committing and pushing incremental work to `codex/m1-founda
 ## Verification
 
 - Native module compiles; 33 Kotlin/JVM tests pass.
-- Timetable/recorder/study unit suites passed; new queue and FSRS tests also pass.
-- Strict TypeScript checks pass. Lint and final build checks are rerun after changes.
+- All 119 JavaScript tests pass across 12 suites, including queue and FSRS regressions.
+- Strict TypeScript and ESLint checks pass.
 - Static web export produces 11 routes.
+- Android 36 x86_64 debug APK builds and installs on the Pixel 4 XL emulator.
+  The September 30 runtime smoke verified timetable navigation, the empty lecture
+  library and native recorder readiness. Navigation now wraps within narrow screens.
+  Microphone capture was not started; recording reliability remains a separate gate.
+- October 2 repeat emulator smoke passed app launch, wrapped navigation and Android
+  settings save with blank keys/IDs. No ReactNativeJS or AndroidRuntime errors were
+  present in the inspected error log. Client type/lint and all 119 tests passed again.
+- [GitHub Actions run 36323104387](https://github.com/hammadshakeelai/notes-app/actions/runs/36323104387)
+  passed both the client and native recorder jobs for commit `bce2712`.
 - Headless Chrome smoke passed on a 390px viewport: real IndexedDB persistence,
   synthetic audio playback, notes navigation/persistence, flashcard creation and review,
   settings save, no page errors or horizontal overflow.
@@ -46,8 +55,8 @@ The owner authorized committing and pushing incremental work to `codex/m1-founda
   reassignment still need implementation.
 - Google OAuth IDs will be supplied later by the owner. Live Drive interop, Google Docs
   conversion and provider calls have not been verified with the owner's accounts.
-- The Android APK build encountered Windows path limits, then exhausted C: space.
-  Native staging and generated output are being relocated to F: before retrying.
+- ARM64 APK assembly and physical-device installation remain unverified. The passing
+  emulator build does not establish Samsung recording reliability.
 - S23 Ultra screen-off/call/swipe-away/process-death/reboot/battery tests, real-lecture
   audio-quality comparison, week-long daily use and deployment remain pending.
 

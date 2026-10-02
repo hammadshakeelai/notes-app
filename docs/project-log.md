@@ -81,3 +81,24 @@ Added the local Kotlin Expo module and a microphone foreground service in its ow
 Connected a recorder screen to the timetable's generated class names. It includes explicit permissions and preflight warnings, start/pause/resume, bookmarks, stop/save, sound level, saved recordings and recovery controls. Web and Expo Go explain that the native build is required. Fixed failed IPC binding cleanup, screen-focus polling, back navigation and the shutdown timeout case that could otherwise release files while an encoder still writes. Failed starts can remove a verified empty attempt; partial audio and unknown files are preserved.
 
 Type checking, lint, 95 JavaScript tests, Expo version compatibility, web export, Android Hermes export and desktop/mobile browser regression pass. Added native framing, rotation, storage-failure and shutdown-ownership tests plus an Android CI job. Public-file privacy checks pass. The Android SDK's exact Build Tools and NDK are installed; Gradle 9.3.1 was downloaded and checksum-verified. Native compile/test results and physical-device checks remain tracked in [Android development](android-development.md); no microphone recording or remote release was performed by these checks.
+
+## 2026-09-25–2026-10-02: Application integration and emulator validation
+
+Integrated durable SQLite/IndexedDB storage, permanent media imports, lecture playback,
+notes and timetable editing, opt-in processing, manual FSRS cards, cited chat and manual
+Drive sync/sharing. The [delivery report](delivery-status.md) records the implemented
+behavior and unfinished requirements. Google IDs remain for the owner to add later.
+
+All 119 JavaScript tests and 33 native JVM tests pass. Type checking, lint, the 11-route
+web export and the mobile browser persistence/playback/study/settings smoke passed.
+Both jobs passed in the linked GitHub Actions run in the delivery report. The x86_64
+Android APK builds and installs; emulator timetable/library/recorder-readiness checks
+passed. Narrow-screen navigation clipping was fixed by allowing the header to wrap.
+These checks did not start microphone capture or verify live provider/Google accounts.
+The October 2 repeat launch/navigation/settings-save smoke also passed; the inspected
+app error log was empty and the client check passed again with all 119 tests.
+
+Generated Windows build artifacts use the larger F: drive after path-length and disk
+space failures. ARM64 packaging, Samsung lifecycle/audio-quality tests, full checked
+processing, generated practice/revision and background sync remain open. Incremental
+commits are pushed to `codex/m1-foundation`; no release tag or merge is claimed.

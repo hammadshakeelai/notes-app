@@ -35,6 +35,11 @@ gates; no fake completion badges or fabricated remote verification.
 
 - Recorder journal now verifies persisted bytes before deleting source chunks.
 - Android compile found an unavailable O_DIRECTORY SDK symbol; corrected to O_RDONLY.
-- Native tests and first complete APK assembly running.
-- Storage and application integration underway; study validation delegated under the
-  subagent development workflow.
+- Native compilation and 33 JVM tests pass; x86_64 APK assembly and emulator installation pass.
+- Storage, library, playback, timetable editing, processing queue, manual FSRS cards,
+  cited chat and manual Drive sync/sharing are implemented to the extent recorded in
+  [delivery status](../../delivery-status.md).
+- Client validation passes 119 tests, type checking and lint; web export and mobile
+  browser smoke pass. Emulator navigation/library/recorder-readiness smoke passes.
+- Full processing caution/fallbacks, generated practice/revision, background sync,
+  setup/notifications, live-provider checks and physical recording gates remain open.

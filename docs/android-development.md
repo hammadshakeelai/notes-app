@@ -48,7 +48,11 @@ An APK assembly is a build check, not proof of recorder reliability. Keep debug 
 
 ## Local verification checkpoint
 
-The recorder now compiles and all 33 Kotlin/JVM tests pass, including retained chunks after a failed journal commit. The first full APK builds encountered Windows C++ path limits and then exhausted C: disk space. The local config plugin supports `-PnotesNativeBuildDir=F:/NotesAppBuildCache/cxx`, and generated build outputs have been moved to F: with directory junctions. No source or personal data was moved. A headless Android 36 x86_64 emulator build is being validated separately. The Windows wrapper propagates the actual child exit status.
+The recorder now compiles and all 33 Kotlin/JVM tests pass, including retained chunks after a failed journal commit. The full Android 36 x86_64 debug APK built successfully and installs on the local Pixel 4 XL emulator. The September 30 runtime smoke verified timetable navigation, the empty library and the native recorder's ready state without starting microphone capture. Earlier builds hit Windows C++ path limits and then exhausted C: disk space. The local config plugin supports `-PnotesNativeBuildDir=F:/NotesAppBuildCache/cxx`, and generated build outputs have been moved to F: with directory junctions. No source or personal data was moved. The physical-device checklist and ARM64 packaging remain open. The Windows wrapper propagates the actual child exit status.
+
+For ADB reverse with Metro on Windows, launch Metro with `NODE_OPTIONS=--dns-result-order=ipv4first` and reverse the selected TCP port. This workstation otherwise resolved localhost to IPv6 while the emulator reverse connected over IPv4. The development-client Tools overlay can overlap header buttons; close its menu and tap the unobstructed part of a button during smoke checks.
+
+On October 2, repeat launch/navigation and Android settings save with blank keys/IDs passed. The inspected ReactNativeJS/AndroidRuntime error log was empty. The emulator briefly reported System UI unresponsive during startup, then recovered after selecting Wait; no app crash was observed. Microphone capture and live account calls were not exercised.
 
 For this Windows workspace, append `-PnotesNativeBuildDir=F:/NotesAppBuildCache/cxx` to Gradle commands. Use `-PreactNativeArchitectures=x86_64` for the local emulator and `arm64-v8a` for the Samsung device. Keep cache paths local; they are not part of the app or CI. Do not remove generated directory junctions recursively without verifying their targets.
 
