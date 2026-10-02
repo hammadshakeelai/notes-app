@@ -54,6 +54,14 @@ For ADB reverse with Metro on Windows, launch Metro with `NODE_OPTIONS=--dns-res
 
 On October 2, repeat launch/navigation and Android settings save with blank keys/IDs passed. The inspected ReactNativeJS/AndroidRuntime error log was empty. The emulator briefly reported System UI unresponsive during startup, then recovered after selecting Wait; no app crash was observed. Microphone capture and live account calls were not exercised.
 
+The October 2 standalone phone-test APK also builds using `:app:assembleRelease` with
+`-PreactNativeArchitectures=arm64-v8a,x86_64`. It uses the generated development signing
+certificate and includes embedded JavaScript. `apksigner verify` passes, and `aapt dump
+badging` confirms API 24 minimum, API 36 target and both architectures. This exact APK
+installs over the emulator development build, launches with ADB reverse removed and
+plays a persisted synthetic WAV to its end. The build took 21 minutes on this workstation.
+Use [phone testing](phone-testing.md) for installation and existing-recording imports.
+
 For this Windows workspace, append `-PnotesNativeBuildDir=F:/NotesAppBuildCache/cxx` to Gradle commands. Use `-PreactNativeArchitectures=x86_64` for the local emulator and `arm64-v8a` for the Samsung device. Keep cache paths local; they are not part of the app or CI. Do not remove generated directory junctions recursively without verifying their targets.
 
 ## S23 Ultra release checklist

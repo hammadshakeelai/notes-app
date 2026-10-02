@@ -1,6 +1,8 @@
 # Delivery status — October 2, 2026
 
-The app is in active development. Do not describe it as completely final or tag a release yet.
+The app is in active development. Do not describe it as completely final or tag a
+production/milestone release yet. Standalone APKs may be published as clearly labelled
+phone-test prereleases.
 The owner authorized committing and pushing incremental work to `codex/m1-foundation`.
 
 ## Implemented
@@ -34,6 +36,20 @@ The owner authorized committing and pushing incremental work to `codex/m1-founda
 - October 2 repeat emulator smoke passed app launch, wrapped navigation and Android
   settings save with blank keys/IDs. No ReactNativeJS or AndroidRuntime errors were
   present in the inspected error log. Client type/lint and all 119 tests passed again.
+- Android file-picker import passed with a synthetic three-second WAV. Playback
+  reached the end and the copied audio/duration remained after force-stop and reopen.
+- [Phone installation and existing-recording import guide](phone-testing.md) added.
+  Library search now includes dates and original imported titles. A manual GitHub
+  Actions workflow can build a standalone test APK with embedded JavaScript.
+- [GitHub Actions run 36958779085](https://github.com/hammadshakeelai/notes-app/actions/runs/36958779085)
+  passed both client and native recorder jobs for the phone-import changes (`9e7a1f0`).
+- Standalone release-variant test APK builds with ARM64 and x86_64, embedded
+  JavaScript and a verified APK v2 signature. It installs and launches on the Android
+  36 emulator without Metro; the saved imported WAV survives the upgrade and plays.
+  This uses development signing for phone testing, not production distribution.
+- [Phone-test prerelease](https://github.com/hammadshakeelai/notes-app/releases/tag/phone-test-2026-10-02)
+  published with APK, checksum and installation/import guide. GitHub's APK digest
+  matches the tested local file: `3384e7fb8664a5367e41a3d648f47db51e497d7efabc82c845da437754f3dac9`.
 - [GitHub Actions run 36323104387](https://github.com/hammadshakeelai/notes-app/actions/runs/36323104387)
   passed both the client and native recorder jobs for commit `bce2712`.
 - Headless Chrome smoke passed on a 390px viewport: real IndexedDB persistence,
@@ -55,8 +71,8 @@ The owner authorized committing and pushing incremental work to `codex/m1-founda
   reassignment still need implementation.
 - Google OAuth IDs will be supplied later by the owner. Live Drive interop, Google Docs
   conversion and provider calls have not been verified with the owner's accounts.
-- ARM64 APK assembly and physical-device installation remain unverified. The passing
-  emulator build does not establish Samsung recording reliability.
+- ARM64 APK assembly passes; physical-device installation remains unverified. The
+  passing standalone emulator build does not establish Samsung recording reliability.
 - S23 Ultra screen-off/call/swipe-away/process-death/reboot/battery tests, real-lecture
   audio-quality comparison, week-long daily use and deployment remain pending.
 

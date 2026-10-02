@@ -1,6 +1,8 @@
 # Phone test build and existing class recordings
 
-Download the APK from the repository's GitHub Releases page on your phone. This is an
+[Download the October 2 phone-test APK](https://github.com/hammadshakeelai/notes-app/releases/download/phone-test-2026-10-02/notes-phone-test.apk)
+or open its [GitHub release page](https://github.com/hammadshakeelai/notes-app/releases/tag/phone-test-2026-10-02)
+for the checksum and installation guide. This is an
 early test build, signed with the development certificate. It includes JavaScript and
 works without Expo Go, Metro or a computer. It is not a Play Store release. Android 7
 or later is required; the APK includes ARM64 for the S23 Ultra and x86_64 for emulators.

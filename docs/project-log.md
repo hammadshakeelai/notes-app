@@ -102,3 +102,16 @@ Generated Windows build artifacts use the larger F: drive after path-length and 
 space failures. ARM64 packaging, Samsung lifecycle/audio-quality tests, full checked
 processing, generated practice/revision and background sync remain open. Incremental
 commits are pushed to `codex/m1-foundation`; no release tag or merge is claimed.
+
+## 2026-10-02: Standalone phone test package
+
+Added Voice Recorder import guidance, date/original-title search and a manual GitHub
+APK workflow. Both CI jobs pass for `9e7a1f0`. A release-variant APK with development
+signing builds for ARM64 and x86_64 and includes JavaScript. Signature verification and
+emulator installation pass. With Metro disconnected, the exact APK launches, retains
+the previously imported audio and plays the synthetic three-second WAV to its end.
+The inspected app error log was empty. A phone-test prerelease is separate from the
+unfinished production/milestone release gates. No private class recordings are uploaded.
+Published [phone-test-2026-10-02](https://github.com/hammadshakeelai/notes-app/releases/tag/phone-test-2026-10-02)
+with the 71,118,839-byte APK, SHA-256 checksum and installation/import guide. The
+GitHub-uploaded digest matches the local APK tested on the emulator.
