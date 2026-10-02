@@ -42,10 +42,10 @@ export function LibraryScreen() {
     } catch (cause) { setMessage(cause instanceof Error ? cause.message : 'Import failed. Your original audio has not changed.'); }
     finally { setBusy(false); }
   }
-  const filtered = items.filter(item => lectureTitle(item.value, timetable).toLowerCase().includes(query.toLowerCase())).sort((a, b) => b.value.date.localeCompare(a.value.date));
+  const filtered = items.filter(item => `${lectureTitle(item.value, timetable)} ${item.value.title} ${item.value.date}`.toLowerCase().includes(query.trim().toLowerCase())).sort((a, b) => b.value.date.localeCompare(a.value.date));
   return <Workspace title="Your lecture library" subtitle="Keep the recording. Find the important part. Come back prepared.">
     <View style={ui.row}><Link href="/recorder" style={ui.link}>Open recorder →</Link><Button onPress={() => setImporting(!importing)} secondary>{importing ? 'Close import' : 'Import audio'}</Button></View>
-    {importing && <View style={ui.card}><Text style={ui.title}>Bring a recording with you</Text><Field label="Title (optional for a class)" value={title} onChangeText={setTitle} /><Field label="Recording date (YYYY-MM-DD)" value={date} onChangeText={setDate} /><Field label="Class start time (HH:MM)" value={start} onChangeText={setStart} />
+    {importing && <View style={ui.card}><Text style={ui.title}>Bring a recording with you</Text><Text style={ui.body}>For a recording from your phone’s Voice Recorder, save or copy it to a folder you can find in My Files, then choose it below. Set the original class date, time and subject. Notes keeps its own copy so your original recording stays available.</Text><Field label="Title (optional for a class)" value={title} onChangeText={setTitle} /><Field label="Recording date (YYYY-MM-DD)" value={date} onChangeText={setDate} /><Field label="Class start time (HH:MM)" value={start} onChangeText={setStart} />
       <View style={ui.row}><Button secondary={subjectId !== null} onPress={() => setSubjectId(null)}>Other</Button>{timetable.subjects.map(subject => <Button key={subject.id} secondary={subjectId !== subject.id} onPress={() => setSubjectId(subject.id)}>{subject.name}</Button>)}</View>
       {subjectId && <View style={ui.row}><Button secondary={stream !== 'lecture'} onPress={() => setStream('lecture')}>Lecture</Button><Button secondary={stream !== 'lab'} onPress={() => setStream('lab')}>Lab</Button></View>}
       <Button disabled={busy} onPress={() => void importAudio()}>{busy ? 'Saving audio…' : 'Choose audio file'}</Button>
