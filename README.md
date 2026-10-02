@@ -1,14 +1,20 @@
+![Notes — Your study companion](docs/assets/notes-banner.svg)
+
 # Notes App
+
+[Download phone APK](https://github.com/hammadshakeelai/notes-app/releases/download/phone-test-2026-10-02/notes-phone-test.apk) · [Install & import recordings](https://github.com/hammadshakeelai/notes-app/blob/codex/m1-foundation/docs/phone-testing.md) · [Completed & remaining work](https://github.com/hammadshakeelai/notes-app/blob/codex/m1-foundation/docs/delivery-status.md)
 
 A personal study app for university. My Android phone records every class, names and files each recording from my timetable, and turns it into English transcripts, notes, flashcards and practice questions. A study chat can search my lectures and the web. Everything syncs through Google Drive, and a web app gives me full access from any computer. It runs entirely on free services.
 
-> **Status:** design approved, transcription tested (Phase 0). Next: **Milestone 1**, the timetable logic ([plan](docs/superpowers/plans/2026-09-18-m1-domain-core.md)). No app code yet.
+> **Status:** A standalone phone-test APK is available. Active implementation is on [`codex/m1-foundation`](https://github.com/hammadshakeelai/notes-app/tree/codex/m1-foundation); this default branch retains the original design documents. Emulator import/playback checks and 119 JavaScript / 33 native tests pass. Physical-device reliability and live-account checks remain pending. See the delivery report linked above.
 
 ## The problem
 
 Lectures here mix English, Urdu and Pashto, often in noisy rooms, and I read English best. In class it's hard to listen, write and understand at once, and recordings I never go back to don't help. This app keeps each lecture's audio, board photos, transcript and notes together, in English, and turns them into revision material automatically.
 
-## Features
+## Approved product scope
+
+These describe the target product; consult the current delivery report for implemented behavior and unfinished work.
 
 ### Recording (Android)
 - One tap to record. The app already knows which class it is from the timetable.
